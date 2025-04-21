@@ -1,0 +1,1 @@
+*.log\n*.tar.gz\n*.zip\n*.jar\n.env\nconfig.php

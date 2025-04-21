@@ -1,0 +1,1 @@
+let ws=new WebSocket('ws://localhost:6655');ws.onmessage=e=>{let box=document.getElementById('chat-box');let msg=document.createElement('div');msg.textContent=e.data;box.appendChild(msg);box.scrollTop=box.scrollHeight};function sendMessage(){let i=document.getElementById('msgInput');if(i.value.trim()){ws.send(i.value);i.value=''}}

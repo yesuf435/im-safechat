@@ -1,0 +1,81 @@
+
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+  <meta charset="UTF-8">
+  <title>IM 群聊系统</title>
+  <style>
+    body { font-family: Arial; margin: 0; padding: 0; }
+    #login, #chat { display: none; padding: 20px; }
+    #chat-box { height: 300px; overflow-y: scroll; border: 1px solid #ccc; padding: 10px; margin-top: 10px; }
+  </style>
+</head>
+<body>
+  <div id="login">
+    <h2>登录系统</h2>
+    用户名：<input id="username"><br><br>
+    密码：<input id="password" type="password"><br><br>
+    <button onclick="login()">登录</button>
+  </div>
+
+  <div id="chat">
+    <h2>群聊窗口</h2>
+    <div id="chat-box"></div>
+    <input id="message" placeholder="输入消息..." style="width:80%">
+    <button onclick="sendMessage()">发送</button>
+  </div>
+
+  <script>
+    const loginView = document.getElementById("login");
+    const chatView = document.getElementById("chat");
+    const chatBox = document.getElementById("chat-box");
+    let ws;
+
+    loginView.style.display = "block";
+
+    function login() {
+      const username = document.getElementById("username").value;
+      const password = document.getElementById("password").value;
+
+      fetch("http://120.27.154.62:6655/api/login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, password })
+      })
+      .then(res => res.json())
+      .then(data => {
+        if (data.code === 0) {
+          loginView.style.display = "none";
+          chatView.style.display = "block";
+          initWebSocket(username);
+        } else {
+          alert("登录失败: " + data.msg);
+        }
+      });
+    }
+
+    function initWebSocket(username) {
+      ws = new WebSocket("ws://120.27.154.62:6655");
+
+      ws.onmessage = event => {
+        const msg = document.createElement("div");
+        msg.textContent = event.data;
+        chatBox.appendChild(msg);
+        chatBox.scrollTop = chatBox.scrollHeight;
+      };
+
+      ws.onopen = () => {
+        ws.send(username + " 加入了群聊");
+      };
+    }
+
+    function sendMessage() {
+      const text = document.getElementById("message").value;
+      if (ws && text.trim() !== "") {
+        ws.send(text);
+        document.getElementById("message").value = "";
+      }
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat Application</title>
+    <style>
+        /* Basic CSS for layout - can be expanded later */
+        body {
+            font-family: sans-serif;
+            margin: 0;
+            padding: 0;
+            height: 100vh;
+        }
+        .container {
+            display: flex;
+            height: 100%;
+        }
+        .sidebar {
+            width: 200px;
+            background-color: #f0f0f0;
+            border-right: 1px solid #ccc;
+            padding: 10px;
+        }
+        .chat-window {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        .messages {
+            flex: 1;
+            padding: 10px;
+            overflow-y: scroll;
+        }
+        .input-area {
+            padding: 10px;
+            border-top: 1px solid #ccc;
+        }
+        .input-area input {
+            width: 100%;
+            padding: 8px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <h2>Contacts</h2>
+            <ul id="contact-list">
+                <li>User 1</li>
+                <li>User 2</li>
+                <li>Group 1</li>
+            </ul>
+        </div>
+        <div class="chat-window">
+            <div class="messages" id="messages">
+                <div class="message">
+                    <span class="user">User 1:</span>
+                    <span class="text">Hello!</span>
+                </div>
+                <div class="message">
+                    <span class="user">User 2:</span>
+                    <span class="text">Hi there!</span>
+                </div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="message-input" placeholder="Type a message...">
+                <button id="send-button">Send</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Basic JavaScript for sending messages (can be expanded later)
+        document.getElementById('send-button').addEventListener('click', function() {
+            const input = document.getElementById('message-input');
+            const messages = document.getElementById('messages');
+            if (input.value) {
+                const newMessage = document.createElement('div');
+                newMessage.classList.add('message');
+                newMessage.innerHTML = `<span class="user">You:</span> <span class="text">${input.value}</span>`;
+                messages.appendChild(newMessage);
+                input.value = '';
+                messages.scrollTop = messages.scrollHeight; // Scroll to bottom
+            }
+        });
+    </script>
+</body>
+</html>
