@@ -1,0 +1,263 @@
+/* 通知功能样式 - 酒红+米白配色方案 */
+:root {
+  --primary-color: #8C1C13; /* 酒红色 */
+  --secondary-color: #F5F5DC; /* 米白色 */
+  --text-color: #333333;
+  --light-text: #F5F5DC;
+  --border-color: #D9A6A0;
+  --hover-color: #6D1510;
+  --active-tab: #8C1C13;
+  --inactive-tab: #D9A6A0;
+}
+
+body {
+  font-family: 'Arial', sans-serif;
+  background-color: var(--secondary-color);
+  color: var(--text-color);
+  margin: 0;
+  padding: 0;
+  font-size: 16px;
+}
+
+.header {
+  background-color: var(--primary-color);
+  color: var(--light-text);
+  padding: 15px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.header h2 {
+  margin: 0;
+  font-size: 24px;
+}
+
+.logout-btn {
+  background-color: var(--secondary-color);
+  color: var(--primary-color);
+  border: none;
+  padding: 10px 15px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+  font-weight: bold;
+}
+
+.logout-btn:hover {
+  background-color: #E8E8D0;
+}
+
+.tab-container {
+  display: flex;
+  background-color: var(--secondary-color);
+  border-bottom: 2px solid var(--border-color);
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+.tab {
+  padding: 15px 20px;
+  cursor: pointer;
+  font-size: 18px;
+  font-weight: bold;
+  text-align: center;
+  flex: 1;
+  min-width: 100px;
+  color: var(--text-color);
+  position: relative;
+}
+
+.tab.active {
+  color: var(--primary-color);
+  border-bottom: 3px solid var(--primary-color);
+}
+
+.tab .badge {
+  position: absolute;
+  top: 5px;
+  right: 5px;
+  background-color: var(--primary-color);
+  color: white;
+  border-radius: 50%;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 12px;
+}
+
+.content-container {
+  display: flex;
+  height: calc(100vh - 120px);
+}
+
+.sidebar {
+  width: 30%;
+  background-color: var(--secondary-color);
+  border-right: 1px solid var(--border-color);
+  overflow-y: auto;
+}
+
+.chat-area {
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+}
+
+.messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  background-color: white;
+}
+
+.input-area {
+  padding: 15px;
+  background-color: var(--secondary-color);
+  display: flex;
+  border-top: 1px solid var(--border-color);
+}
+
+.input-area input {
+  flex: 1;
+  padding: 12px;
+  border: 1px solid var(--border-color);
+  border-radius: 5px;
+  font-size: 16px;
+}
+
+.input-area button {
+  margin-left: 10px;
+  padding: 12px 20px;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.input-area button:hover {
+  background-color: var(--hover-color);
+}
+
+.message {
+  margin-bottom: 15px;
+  max-width: 80%;
+}
+
+.message.sent {
+  margin-left: auto;
+  text-align: right;
+}
+
+.message.received {
+  margin-right: auto;
+}
+
+.message .user {
+  font-weight: bold;
+  margin-bottom: 5px;
+  font-size: 16px;
+}
+
+.message .text {
+  padding: 10px 15px;
+  border-radius: 10px;
+  display: inline-block;
+  font-size: 16px;
+}
+
+.message.sent .text {
+  background-color: var(--primary-color);
+  color: white;
+}
+
+.message.received .text {
+  background-color: #E8E8D0;
+}
+
+.message .time {
+  font-size: 12px;
+  color: #777;
+  margin-top: 5px;
+}
+
+.user-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.user-list li {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  font-size: 16px;
+}
+
+.notification-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.notification-item {
+  padding: 15px;
+  border-bottom: 1px solid var(--border-color);
+  background-color: white;
+}
+
+.notification-title {
+  font-weight: bold;
+  font-size: 18px;
+  color: var(--primary-color);
+  margin-bottom: 5px;
+}
+
+.notification-content {
+  font-size: 16px;
+  margin-bottom: 5px;
+}
+
+.notification-time {
+  font-size: 14px;
+  color: #777;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+  .content-container {
+    flex-direction: column;
+  }
+  
+  .sidebar, .chat-area {
+    width: 100%;
+    height: auto;
+  }
+  
+  .sidebar {
+    height: 30vh;
+    border-right: none;
+    border-bottom: 1px solid var(--border-color);
+  }
+  
+  .chat-area {
+    height: 70vh;
+  }
+  
+  .header h2 {
+    font-size: 20px;
+  }
+  
+  .tab {
+    font-size: 16px;
+    padding: 12px 15px;
+  }
+  
+  .message .text {
+    font-size: 16px;
+  }
+}

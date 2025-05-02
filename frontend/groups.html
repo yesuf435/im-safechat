@@ -1,0 +1,1465 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IM聊天系统 - 群聊</title>
+    <link rel="stylesheet" href="notification_style.css">
+<link rel="stylesheet" href="css/wechat_style.css">
+    <link rel="stylesheet" href="mobile_optimization.css">
+    <style>
+        :root {
+            --primary-color: #8C1C13; /* 酒红色 */
+            --secondary-color: #F5F5DC; /* 米白色 */
+            --text-color: #333;
+            --border-color: #ddd;
+            --highlight-color: #e6e6e6;
+            --success-color: #4CAF50;
+            --danger-color: #f44336;
+        }
+        
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        
+        body {
+            font-family: 'Microsoft YaHei', Arial, sans-serif;
+            background-color: #f1f1f1;
+            color: var(--text-color);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .header {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+        }
+        
+        .header h2 {
+            font-size: 20px;
+        }
+        
+        .header-btn {
+            background: none;
+            border: 1px solid white;
+            color: white;
+            padding: 5px 10px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        
+        .main-container {
+            margin-top: 56px;
+            margin-bottom: 60px;
+            height: calc(100vh - 116px);
+            overflow-y: auto;
+        }
+        
+        .group-list {
+            background-color: white;
+        }
+        
+        .group-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            position: relative;
+        }
+        
+        .group-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 15px;
+            font-size: 20px;
+            color: white;
+        }
+        
+        .group-info {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .group-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .group-message {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 200px;
+        }
+        
+        .group-time {
+            font-size: 12px;
+            color: #999;
+            position: absolute;
+            top: 15px;
+            right: 15px;
+        }
+        
+        .group-badge {
+            position: absolute;
+            bottom: 15px;
+            right: 15px;
+            background-color: var(--danger-color);
+            color: white;
+            border-radius: 50%;
+            width: 20px;
+            height: 20px;
+            font-size: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .pinned-icon {
+            position: absolute;
+            top: 40px;
+            right: 15px;
+            color: var(--primary-color);
+            font-size: 14px;
+        }
+        
+        .muted-icon {
+            position: absolute;
+            top: 40px;
+            right: 35px;
+            color: #999;
+            font-size: 14px;
+        }
+        
+        .create-group-btn {
+            position: fixed;
+            bottom: 70px;
+            right: 20px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-color: var(--primary-color);
+            color: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 24px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            z-index: 99;
+            cursor: pointer;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            background-color: var(--secondary-color);
+            border-top: 1px solid var(--border-color);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            height: 60px;
+        }
+        
+        .nav-item {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 8px 0;
+            font-size: 14px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+        }
+        
+        .nav-icon {
+            font-size: 24px;
+            margin-bottom: 2px;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+        
+        .form-group input, .form-group textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .form-group textarea {
+            height: 80px;
+            resize: none;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        
+        .cancel-btn {
+            background-color: #f1f1f1;
+            color: var(--text-color);
+        }
+        
+        .confirm-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        /* 加载动画 */
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+        
+        .loading-spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--primary-color);
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            animation: spin 2s linear infinite;
+            margin: 0 auto;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* 消息提示 */
+        .toast {
+            position: fixed;
+            top: 80px;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: rgba(0, 0, 0, 0.7);
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            z-index: 1000;
+            display: none;
+        }
+        
+        /* 空状态 */
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 50px 20px;
+            text-align: center;
+        }
+        
+        .empty-icon {
+            font-size: 60px;
+            color: #ccc;
+            margin-bottom: 20px;
+        }
+        
+        .empty-text {
+            font-size: 16px;
+            color: #999;
+            margin-bottom: 20px;
+        }
+        
+        .empty-btn {
+            padding: 10px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+        
+        /* 好友选择器 */
+        .friend-selector {
+            max-height: 200px;
+            overflow-y: auto;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        
+        .friend-item {
+            display: flex;
+            align-items: center;
+            padding: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .friend-item:last-child {
+            border-bottom: none;
+        }
+        
+        .friend-checkbox {
+            margin-right: 10px;
+        }
+        
+        .friend-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #e1e1e1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-right: 10px;
+            font-size: 16px;
+            color: var(--primary-color);
+        }
+        
+        .friend-name {
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>群聊</h2>
+        <button class="header-btn" id="logoutBtn">退出登录</button>
+    </div>
+    
+    <div class="main-container">
+        <div class="group-list" id="group-list">
+            <div class="loading" id="groups-loading">
+                <div class="loading-spinner"></div>
+            </div>
+        </div>
+        
+        <div class="empty-state" id="empty-state" style="display: none;">
+            <div class="empty-icon">👥</div>
+            <div class="empty-text">您还没有加入任何群聊</div>
+            <button class="empty-btn" id="createGroupBtn">创建群聊</button>
+        </div>
+    </div>
+    
+    <div class="create-group-btn" id="createGroupBtnFloat">+</div>
+    
+    <div class="bottom-nav">
+        <div class="nav-item" data-page="chat">
+            <div class="nav-icon">💬</div>
+            <div>聊天</div>
+        </div>
+        <div class="nav-item" data-page="contacts">
+            <div class="nav-icon">👥</div>
+            <div>联系人</div>
+        </div>
+        <div class="nav-item active" data-page="groups">
+            <div class="nav-icon">👪</div>
+            <div>群聊</div>
+        </div>
+        <div class="nav-item" data-page="me">
+            <div class="nav-icon">👤</div>
+            <div>我的</div>
+        </div>
+    </div>
+    
+    <!-- 创建群聊模态框 -->
+    <div class="modal" id="createGroupModal">
+        <div class="modal-content">
+            <div class="modal-title">创建群聊</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="groupName">群聊名称</label>
+                    <input type="text" id="groupName" placeholder="请输入群聊名称">
+                </div>
+                <div class="form-group">
+                    <label for="groupDescription">群聊描述（选填）</label>
+                    <textarea id="groupDescription" placeholder="请输入群聊描述"></textarea>
+                </div>
+                <div class="form-group">
+                    <label>选择好友</label>
+                    <div class="friend-selector" id="friendSelector">
+                        <div class="loading" id="friends-loading">
+                            <div class="loading-spinner"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelCreateGroup">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmCreateGroup">创建</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 群聊设置模态框 -->
+    <div class="modal" id="groupSettingsModal">
+        <div class="modal-content">
+            <div class="modal-title">群聊设置</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="pinGroup"> 置顶聊天
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="muteGroup"> 消息免打扰
+                    </label>
+                </div>
+                <div class="form-group" id="adminOptions" style="display: none;">
+                    <button class="modal-btn confirm-btn" style="width: 100%; margin: 5px 0;" id="editGroupBtn">修改群资料</button>
+                    <button class="modal-btn confirm-btn" style="width: 100%; margin: 5px 0;" id="inviteFriendsBtn">邀请好友</button>
+                </div>
+                <div class="form-group" id="ownerOptions" style="display: none;">
+                    <button class="modal-btn confirm-btn" style="width: 100%; margin: 5px 0;" id="transferOwnerBtn">转让群主</button>
+                    <button class="modal-btn danger-btn" style="width: 100%; margin: 5px 0; background-color: var(--danger-color); color: white;" id="dissolveGroupBtn">解散群聊</button>
+                </div>
+                <div class="form-group">
+                    <button class="modal-btn danger-btn" style="width: 100%; margin: 5px 0; background-color: var(--danger-color); color: white;" id="leaveGroupBtn">退出群聊</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="closeGroupSettings">关闭</button>
+                <button class="modal-btn confirm-btn" id="saveGroupSettings">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 修改群资料模态框 -->
+    <div class="modal" id="editGroupModal">
+        <div class="modal-content">
+            <div class="modal-title">修改群资料</div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="editGroupName">群聊名称</label>
+                    <input type="text" id="editGroupName" placeholder="请输入群聊名称">
+                </div>
+                <div class="form-group">
+                    <label for="editGroupDescription">群聊描述（选填）</label>
+                    <textarea id="editGroupDescription" placeholder="请输入群聊描述"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelEditGroup">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmEditGroup">保存</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 邀请好友模态框 -->
+    <div class="modal" id="inviteFriendsModal">
+        <div class="modal-content">
+            <div class="modal-title">邀请好友</div>
+            <div class="modal-body">
+                <div class="friend-selector" id="inviteFriendSelector">
+                    <div class="loading" id="invite-friends-loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelInviteFriends">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmInviteFriends">邀请</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 转让群主模态框 -->
+    <div class="modal" id="transferOwnerModal">
+        <div class="modal-content">
+            <div class="modal-title">转让群主</div>
+            <div class="modal-body">
+                <div class="friend-selector" id="memberSelector">
+                    <div class="loading" id="members-loading">
+                        <div class="loading-spinner"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelTransferOwner">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmTransferOwner">转让</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 确认解散群聊模态框 -->
+    <div class="modal" id="confirmDissolveModal">
+        <div class="modal-content">
+            <div class="modal-title">解散群聊</div>
+            <div class="modal-body">
+                确定要解散该群聊吗？解散后所有群成员将被移除，群聊消息将无法恢复。
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelDissolveGroup">取消</button>
+                <button class="modal-btn danger-btn" style="background-color: var(--danger-color); color: white;" id="confirmDissolveGroup">解散</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 确认退出群聊模态框 -->
+    <div class="modal" id="confirmLeaveModal">
+        <div class="modal-content">
+            <div class="modal-title">退出群聊</div>
+            <div class="modal-body">
+                确定要退出该群聊吗？退出后将不再接收该群的消息。
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelLeaveGroup">取消</button>
+                <button class="modal-btn danger-btn" style="background-color: var(--danger-color); color: white;" id="confirmLeaveGroup">退出</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- 消息提示 -->
+    <div class="toast" id="toast"></div>
+    
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        // 检查用户是否已登录
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        
+        if (!token || !username) {
+            window.location.href = 'login.html';
+        }
+        
+        // 全局变量
+        let currentGroupId = null;
+        let currentGroupData = null;
+        let socket = null;
+        let myFriends = [];
+        let groupMembers = [];
+        
+        // 初始化Socket.io连接
+        function initSocket() {
+            socket = io();
+            
+            // 认证
+            socket.emit('authenticate', token);
+            
+            // 监听群组邀请
+            socket.on('group_invitation', (data) => {
+                showToast(`${data.inviter_name} 邀请您加入群聊 "${data.group_name}"`);
+                loadGroups();
+            });
+            
+            // 监听群组解散
+            socket.on('group_dissolved', (data) => {
+                showToast(`群聊已被 ${data.dissolver_name} 解散`);
+                loadGroups();
+            });
+            
+            // 监听群主转让
+            socket.on('group_owner_transferred', (data) => {
+                showToast(`您已成为群聊 "${data.group_name}" 的新群主`);
+                loadGroups();
+            });
+            
+            // 监听群组公告
+            socket.on('group_announcement', (data) => {
+                showToast(data.message);
+            });
+            
+            // 监听群组名称变更
+            socket.on('group_name_changed', (data) => {
+                showToast(`群聊名称已从 "${data.old_name}" 变更为 "${data.new_name}"`);
+                loadGroups();
+            });
+            
+            // 监听群组消息
+            socket.on('group_message', (data) => {
+                // 如果不是当前查看的群聊，更新未读消息数
+                if (data.group_id !== currentGroupId) {
+                    loadGroups();
+                }
+            });
+        }
+        
+        // 显示消息提示
+        function showToast(message) {
+            const toast = document.getElementById('toast');
+            toast.textContent = message;
+            toast.style.display = 'block';
+            
+            setTimeout(() => {
+                toast.style.display = 'none';
+            }, 3000);
+        }
+        
+        // 格式化时间
+        function formatTime(timestamp) {
+            const date = new Date(timestamp);
+            const now = new Date();
+            const diff = now - date;
+            
+            // 今天的消息只显示时间
+            if (diff < 24 * 60 * 60 * 1000 && date.getDate() === now.getDate()) {
+                return date.toLocaleTimeString('zh-CN', { hour: '2-digit', minute: '2-digit' });
+            }
+            
+            // 昨天的消息显示"昨天"
+            const yesterday = new Date(now);
+            yesterday.setDate(now.getDate() - 1);
+            if (date.getDate() === yesterday.getDate() && date.getMonth() === yesterday.getMonth() && date.getFullYear() === yesterday.getFullYear()) {
+                return '昨天';
+            }
+            
+            // 一周内的消息显示星期几
+            if (diff < 7 * 24 * 60 * 60 * 1000) {
+                const weekdays = ['日', '一', '二', '三', '四', '五', '六'];
+                return '星期' + weekdays[date.getDay()];
+            }
+            
+            // 其他消息显示日期
+            return date.toLocaleDateString('zh-CN', { month: '2-digit', day: '2-digit' });
+        }
+        
+        // 加载群聊列表
+        function loadGroups() {
+            const groupList = document.getElementById('group-list');
+            const groupsLoading = document.getElementById('groups-loading');
+            const emptyState = document.getElementById('empty-state');
+            
+            // 显示加载动画
+            groupsLoading.style.display = 'block';
+            emptyState.style.display = 'none';
+            
+            // 清空现有内容
+            const existingItems = groupList.querySelectorAll('.group-item');
+            existingItems.forEach(item => item.remove());
+            
+            fetch('/api/groups', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取群聊列表失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 隐藏加载动画
+                groupsLoading.style.display = 'none';
+                
+                if (data.groups && data.groups.length > 0) {
+                    data.groups.forEach(group => {
+                        const groupItem = document.createElement('div');
+                        groupItem.className = 'group-item';
+                        groupItem.setAttribute('data-id', group.id);
+                        
+                        // 获取群名首字母作为头像
+                        const initial = group.name.charAt(0).toUpperCase();
+                        
+                        // 格式化最后消息时间
+                        const timeStr = group.last_message_time ? formatTime(group.last_message_time) : '';
+                        
+                        groupItem.innerHTML = `
+                            <div class="group-avatar">${initial}</div>
+                            <div class="group-info">
+                                <div class="group-name">${group.name}</div>
+                                <div class="group-message">${group.last_message || ''}</div>
+                            </div>
+                            <div class="group-time">${timeStr}</div>
+                            ${group.is_pinned ? '<div class="pinned-icon">📌</div>' : ''}
+                            ${group.is_muted ? '<div class="muted-icon">🔕</div>' : ''}
+                        `;
+                        
+                        groupList.appendChild(groupItem);
+                        
+                        // 添加点击事件
+                        groupItem.addEventListener('click', function() {
+                            const groupId = this.getAttribute('data-id');
+                            // 跳转到群聊消息页面
+                            localStorage.setItem('currentChat', JSON.stringify({
+                                id: groupId,
+                                name: group.name,
+                                type: 'group'
+                            }));
+                            window.location.href = 'chat_with_notifications.html';
+                        });
+                        
+                        // 添加长按事件
+                        let pressTimer;
+                        groupItem.addEventListener('touchstart', function() {
+                            pressTimer = setTimeout(() => {
+                                openGroupSettings(group.id);
+                            }, 500);
+                        });
+                        
+                        groupItem.addEventListener('touchend', function() {
+                            clearTimeout(pressTimer);
+                        });
+                        
+                        groupItem.addEventListener('contextmenu', function(e) {
+                            e.preventDefault();
+                            openGroupSettings(group.id);
+                        });
+                    });
+                } else {
+                    emptyState.style.display = 'flex';
+                }
+            })
+            .catch(error => {
+                console.error('获取群聊列表失败:', error);
+                groupsLoading.style.display = 'none';
+                emptyState.style.display = 'flex';
+                showToast('获取群聊列表失败，请稍后重试');
+            });
+        }
+        
+        // 打开群聊设置
+        function openGroupSettings(groupId) {
+            currentGroupId = groupId;
+            
+            // 获取群聊详情
+            fetch(`/api/groups/${groupId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取群聊详情失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                currentGroupData = data;
+                
+                // 设置置顶和静音状态
+                document.getElementById('pinGroup').checked = data.settings.is_pinned;
+                document.getElementById('muteGroup').checked = data.settings.is_muted;
+                
+                // 根据用户角色显示不同选项
+                const adminOptions = document.getElementById('adminOptions');
+                const ownerOptions = document.getElementById('ownerOptions');
+                const leaveGroupBtn = document.getElementById('leaveGroupBtn');
+                
+                if (data.userRole === 'admin') {
+                    adminOptions.style.display = 'block';
+                    
+                    // 如果是群主，显示群主选项
+                    if (data.group.creator_id === parseInt(localStorage.getItem('userId'))) {
+                        ownerOptions.style.display = 'block';
+                        leaveGroupBtn.style.display = 'none';
+                    } else {
+                        ownerOptions.style.display = 'none';
+                        leaveGroupBtn.style.display = 'block';
+                    }
+                } else {
+                    adminOptions.style.display = 'none';
+                    ownerOptions.style.display = 'none';
+                    leaveGroupBtn.style.display = 'block';
+                }
+                
+                // 显示设置模态框
+                document.getElementById('groupSettingsModal').style.display = 'block';
+            })
+            .catch(error => {
+                console.error('获取群聊详情失败:', error);
+                showToast('获取群聊详情失败，请稍后重试');
+            });
+        }
+        
+        // 加载好友列表
+        function loadFriends() {
+            const friendSelector = document.getElementById('friendSelector');
+            const friendsLoading = document.getElementById('friends-loading');
+            
+            // 显示加载动画
+            friendsLoading.style.display = 'block';
+            
+            // 清空现有内容
+            const existingItems = friendSelector.querySelectorAll('.friend-item');
+            existingItems.forEach(item => item.remove());
+            
+            fetch('/api/friends', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取好友列表失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 隐藏加载动画
+                friendsLoading.style.display = 'none';
+                
+                if (data.friends && data.friends.length > 0) {
+                    myFriends = data.friends;
+                    
+                    data.friends.forEach(friend => {
+                        const friendItem = document.createElement('div');
+                        friendItem.className = 'friend-item';
+                        
+                        // 获取名字首字母作为头像
+                        const initial = friend.username.charAt(0).toUpperCase();
+                        
+                        friendItem.innerHTML = `
+                            <input type="checkbox" class="friend-checkbox" data-id="${friend.id}">
+                            <div class="friend-avatar">${initial}</div>
+                            <div class="friend-name">${friend.username}</div>
+                        `;
+                        
+                        friendSelector.appendChild(friendItem);
+                    });
+                } else {
+                    friendSelector.innerHTML = '<div class="empty-message">暂无好友，请先添加好友</div>';
+                }
+            })
+            .catch(error => {
+                console.error('获取好友列表失败:', error);
+                friendsLoading.style.display = 'none';
+                friendSelector.innerHTML = '<div class="empty-message">获取好友列表失败，请稍后重试</div>';
+            });
+        }
+        
+        // 加载可邀请的好友列表
+        function loadInvitableFriends(groupId) {
+            const inviteFriendSelector = document.getElementById('inviteFriendSelector');
+            const inviteFriendsLoading = document.getElementById('invite-friends-loading');
+            
+            // 显示加载动画
+            inviteFriendsLoading.style.display = 'block';
+            
+            // 清空现有内容
+            const existingItems = inviteFriendSelector.querySelectorAll('.friend-item');
+            existingItems.forEach(item => item.remove());
+            
+            // 获取群成员
+            fetch(`/api/groups/${groupId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取群聊详情失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                groupMembers = data.members;
+                
+                // 获取好友列表
+                return fetch('/api/friends', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取好友列表失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 隐藏加载动画
+                inviteFriendsLoading.style.display = 'none';
+                
+                if (data.friends && data.friends.length > 0) {
+                    // 过滤掉已经是群成员的好友
+                    const memberIds = groupMembers.map(member => member.user_id);
+                    const invitableFriends = data.friends.filter(friend => !memberIds.includes(friend.id));
+                    
+                    if (invitableFriends.length > 0) {
+                        invitableFriends.forEach(friend => {
+                            const friendItem = document.createElement('div');
+                            friendItem.className = 'friend-item';
+                            
+                            // 获取名字首字母作为头像
+                            const initial = friend.username.charAt(0).toUpperCase();
+                            
+                            friendItem.innerHTML = `
+                                <input type="checkbox" class="friend-checkbox" data-id="${friend.id}">
+                                <div class="friend-avatar">${initial}</div>
+                                <div class="friend-name">${friend.username}</div>
+                            `;
+                            
+                            inviteFriendSelector.appendChild(friendItem);
+                        });
+                    } else {
+                        inviteFriendSelector.innerHTML = '<div class="empty-message">所有好友都已经是群成员</div>';
+                    }
+                } else {
+                    inviteFriendSelector.innerHTML = '<div class="empty-message">暂无好友，请先添加好友</div>';
+                }
+            })
+            .catch(error => {
+                console.error('加载可邀请好友失败:', error);
+                inviteFriendsLoading.style.display = 'none';
+                inviteFriendSelector.innerHTML = '<div class="empty-message">加载好友列表失败，请稍后重试</div>';
+            });
+        }
+        
+        // 加载群成员列表（用于转让群主）
+        function loadGroupMembers(groupId) {
+            const memberSelector = document.getElementById('memberSelector');
+            const membersLoading = document.getElementById('members-loading');
+            
+            // 显示加载动画
+            membersLoading.style.display = 'block';
+            
+            // 清空现有内容
+            const existingItems = memberSelector.querySelectorAll('.friend-item');
+            existingItems.forEach(item => item.remove());
+            
+            fetch(`/api/groups/${groupId}`, {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('获取群聊详情失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                // 隐藏加载动画
+                membersLoading.style.display = 'none';
+                
+                if (data.members && data.members.length > 0) {
+                    // 过滤掉自己
+                    const userId = parseInt(localStorage.getItem('userId'));
+                    const otherMembers = data.members.filter(member => member.user_id !== userId);
+                    
+                    if (otherMembers.length > 0) {
+                        otherMembers.forEach(member => {
+                            const memberItem = document.createElement('div');
+                            memberItem.className = 'friend-item';
+                            
+                            // 获取名字首字母作为头像
+                            const initial = member.username.charAt(0).toUpperCase();
+                            
+                            memberItem.innerHTML = `
+                                <input type="radio" name="newOwner" class="friend-checkbox" data-id="${member.user_id}">
+                                <div class="friend-avatar">${initial}</div>
+                                <div class="friend-name">${member.username}${member.role === 'admin' ? ' (管理员)' : ''}</div>
+                            `;
+                            
+                            memberSelector.appendChild(memberItem);
+                        });
+                    } else {
+                        memberSelector.innerHTML = '<div class="empty-message">群里只有您一个成员，无法转让群主</div>';
+                    }
+                } else {
+                    memberSelector.innerHTML = '<div class="empty-message">获取群成员失败</div>';
+                }
+            })
+            .catch(error => {
+                console.error('获取群成员失败:', error);
+                membersLoading.style.display = 'none';
+                memberSelector.innerHTML = '<div class="empty-message">获取群成员失败，请稍后重试</div>';
+            });
+        }
+        
+        // 创建群聊
+        function createGroup() {
+            const groupName = document.getElementById('groupName').value.trim();
+            const groupDescription = document.getElementById('groupDescription').value.trim();
+            const friendCheckboxes = document.querySelectorAll('#friendSelector .friend-checkbox:checked');
+            
+            if (!groupName) {
+                showToast('请输入群聊名称');
+                return;
+            }
+            
+            const memberIds = Array.from(friendCheckboxes).map(checkbox => parseInt(checkbox.getAttribute('data-id')));
+            
+            fetch('/api/groups', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: groupName,
+                    description: groupDescription,
+                    memberIds
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('创建群聊失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast('群聊创建成功');
+                
+                // 关闭模态框
+                document.getElementById('createGroupModal').style.display = 'none';
+                
+                // 重新加载群聊列表
+                loadGroups();
+                
+                // 清空表单
+                document.getElementById('groupName').value = '';
+                document.getElementById('groupDescription').value = '';
+                friendCheckboxes.forEach(checkbox => checkbox.checked = false);
+            })
+            .catch(error => {
+                console.error('创建群聊失败:', error);
+                showToast('创建群聊失败，请稍后重试');
+            });
+        }
+        
+        // 保存群聊设置
+        function saveGroupSettings() {
+            const isPinned = document.getElementById('pinGroup').checked;
+            const isMuted = document.getElementById('muteGroup').checked;
+            
+            fetch(`/api/groups/${currentGroupId}/settings`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    isPinned,
+                    isMuted
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('保存群聊设置失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast('群聊设置已保存');
+                
+                // 关闭模态框
+                document.getElementById('groupSettingsModal').style.display = 'none';
+                
+                // 重新加载群聊列表
+                loadGroups();
+            })
+            .catch(error => {
+                console.error('保存群聊设置失败:', error);
+                showToast('保存群聊设置失败，请稍后重试');
+            });
+        }
+        
+        // 修改群资料
+        function editGroup() {
+            const groupName = document.getElementById('editGroupName').value.trim();
+            const groupDescription = document.getElementById('editGroupDescription').value.trim();
+            
+            if (!groupName) {
+                showToast('请输入群聊名称');
+                return;
+            }
+            
+            fetch(`/api/groups/${currentGroupId}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    name: groupName,
+                    description: groupDescription
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('修改群资料失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast('群资料已更新');
+                
+                // 关闭模态框
+                document.getElementById('editGroupModal').style.display = 'none';
+                
+                // 重新加载群聊列表
+                loadGroups();
+            })
+            .catch(error => {
+                console.error('修改群资料失败:', error);
+                showToast('修改群资料失败，请稍后重试');
+            });
+        }
+        
+        // 邀请好友加入群聊
+        function inviteFriends() {
+            const friendCheckboxes = document.querySelectorAll('#inviteFriendSelector .friend-checkbox:checked');
+            
+            if (friendCheckboxes.length === 0) {
+                showToast('请选择要邀请的好友');
+                return;
+            }
+            
+            const friendIds = Array.from(friendCheckboxes).map(checkbox => parseInt(checkbox.getAttribute('data-id')));
+            
+            fetch(`/api/groups/${currentGroupId}/invite`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    friendIds
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('邀请好友失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast(data.message);
+                
+                // 关闭模态框
+                document.getElementById('inviteFriendsModal').style.display = 'none';
+            })
+            .catch(error => {
+                console.error('邀请好友失败:', error);
+                showToast('邀请好友失败，请稍后重试');
+            });
+        }
+        
+        // 转让群主
+        function transferOwner() {
+            const newOwnerRadio = document.querySelector('#memberSelector input[name="newOwner"]:checked');
+            
+            if (!newOwnerRadio) {
+                showToast('请选择新群主');
+                return;
+            }
+            
+            const newOwnerId = parseInt(newOwnerRadio.getAttribute('data-id'));
+            
+            fetch(`/api/groups/${currentGroupId}/transfer`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    newOwnerId
+                })
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('转让群主失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast(data.message);
+                
+                // 关闭模态框
+                document.getElementById('transferOwnerModal').style.display = 'none';
+                document.getElementById('groupSettingsModal').style.display = 'none';
+                
+                // 重新加载群聊列表
+                loadGroups();
+            })
+            .catch(error => {
+                console.error('转让群主失败:', error);
+                showToast('转让群主失败，请稍后重试');
+            });
+        }
+        
+        // 解散群聊
+        function dissolveGroup() {
+            fetch(`/api/groups/${currentGroupId}`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('解散群聊失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast(data.message);
+                
+                // 关闭模态框
+                document.getElementById('confirmDissolveModal').style.display = 'none';
+                document.getElementById('groupSettingsModal').style.display = 'none';
+                
+                // 重新加载群聊列表
+                loadGroups();
+            })
+            .catch(error => {
+                console.error('解散群聊失败:', error);
+                showToast('解散群聊失败，请稍后重试');
+            });
+        }
+        
+        // 退出群聊
+        function leaveGroup() {
+            fetch(`/api/groups/${currentGroupId}/leave`, {
+                method: 'POST',
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('退出群聊失败');
+                }
+                return response.json();
+            })
+            .then(data => {
+                showToast(data.message);
+                
+                // 关闭模态框
+                document.getElementById('confirmLeaveModal').style.display = 'none';
+                document.getElementById('groupSettingsModal').style.display = 'none';
+                
+                // 重新加载群聊列表
+                loadGroups();
+            })
+            .catch(error => {
+                console.error('退出群聊失败:', error);
+                showToast('退出群聊失败，请稍后重试');
+            });
+        }
+        
+        // 底部导航
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const pageName = this.getAttribute('data-page');
+                
+                // 激活当前导航项
+                navItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 页面跳转
+                if (pageName === 'chat') {
+                    window.location.href = 'chat_with_notifications.html';
+                } else if (pageName === 'contacts') {
+                    window.location.href = 'friend_system_frontend_improvements.html';
+                } else if (pageName === 'me') {
+                    // 个人设置页面，暂未实现
+                    showToast('个人设置功能正在开发中');
+                }
+            });
+        });
+        
+        // 创建群聊按钮
+        document.getElementById('createGroupBtn').addEventListener('click', function() {
+            document.getElementById('createGroupModal').style.display = 'block';
+            loadFriends();
+        });
+        
+        document.getElementById('createGroupBtnFloat').addEventListener('click', function() {
+            document.getElementById('createGroupModal').style.display = 'block';
+            loadFriends();
+        });
+        
+        // 确认创建群聊
+        document.getElementById('confirmCreateGroup').addEventListener('click', createGroup);
+        
+        // 取消创建群聊
+        document.getElementById('cancelCreateGroup').addEventListener('click', function() {
+            document.getElementById('createGroupModal').style.display = 'none';
+        });
+        
+        // 保存群聊设置
+        document.getElementById('saveGroupSettings').addEventListener('click', saveGroupSettings);
+        
+        // 关闭群聊设置
+        document.getElementById('closeGroupSettings').addEventListener('click', function() {
+            document.getElementById('groupSettingsModal').style.display = 'none';
+        });
+        
+        // 修改群资料按钮
+        document.getElementById('editGroupBtn').addEventListener('click', function() {
+            document.getElementById('groupSettingsModal').style.display = 'none';
+            document.getElementById('editGroupModal').style.display = 'block';
+            
+            // 填充当前群资料
+            document.getElementById('editGroupName').value = currentGroupData.group.name;
+            document.getElementById('editGroupDescription').value = currentGroupData.group.description || '';
+        });
+        
+        // 确认修改群资料
+        document.getElementById('confirmEditGroup').addEventListener('click', editGroup);
+        
+        // 取消修改群资料
+        document.getElementById('cancelEditGroup').addEventListener('click', function() {
+            document.getElementById('editGroupModal').style.display = 'none';
+            document.getElementById('groupSettingsModal').style.display = 'block';
+        });
+        
+        // 邀请好友按钮
+        document.getElementById('inviteFriendsBtn').addEventListener('click', function() {
+            document.getElementById('groupSettingsModal').style.display = 'none';
+            document.getElementById('inviteFriendsModal').style.display = 'block';
+            loadInvitableFriends(currentGroupId);
+        });
+        
+        // 确认邀请好友
+        document.getElementById('confirmInviteFriends').addEventListener('click', inviteFriends);
+        
+        // 取消邀请好友
+        document.getElementById('cancelInviteFriends').addEventListener('click', function() {
+            document.getElementById('inviteFriendsModal').style.display = 'none';
+            document.getElementById('groupSettingsModal').style.display = 'block';
+        });
+        
+        // 转让群主按钮
+        document.getElementById('transferOwnerBtn').addEventListener('click', function() {
+            document.getElementById('groupSettingsModal').style.display = 'none';
+            document.getElementById('transferOwnerModal').style.display = 'block';
+            loadGroupMembers(currentGroupId);
+        });
+        
+        // 确认转让群主
+        document.getElementById('confirmTransferOwner').addEventListener('click', transferOwner);
+        
+        // 取消转让群主
+        document.getElementById('cancelTransferOwner').addEventListener('click', function() {
+            document.getElementById('transferOwnerModal').style.display = 'none';
+            document.getElementById('groupSettingsModal').style.display = 'block';
+        });
+        
+        // 解散群聊按钮
+        document.getElementById('dissolveGroupBtn').addEventListener('click', function() {
+            document.getElementById('groupSettingsModal').style.display = 'none';
+            document.getElementById('confirmDissolveModal').style.display = 'block';
+        });
+        
+        // 确认解散群聊
+        document.getElementById('confirmDissolveGroup').addEventListener('click', dissolveGroup);
+        
+        // 取消解散群聊
+        document.getElementById('cancelDissolveGroup').addEventListener('click', function() {
+            document.getElementById('confirmDissolveModal').style.display = 'none';
+            document.getElementById('groupSettingsModal').style.display = 'block';
+        });
+        
+        // 退出群聊按钮
+        document.getElementById('leaveGroupBtn').addEventListener('click', function() {
+            document.getElementById('groupSettingsModal').style.display = 'none';
+            document.getElementById('confirmLeaveModal').style.display = 'block';
+        });
+        
+        // 确认退出群聊
+        document.getElementById('confirmLeaveGroup').addEventListener('click', leaveGroup);
+        
+        // 取消退出群聊
+        document.getElementById('cancelLeaveGroup').addEventListener('click', function() {
+            document.getElementById('confirmLeaveModal').style.display = 'none';
+            document.getElementById('groupSettingsModal').style.display = 'block';
+        });
+        
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        });
+        
+        // 初始化
+        function init() {
+            // 初始化Socket.io连接
+            initSocket();
+            
+            // 加载群聊列表
+            loadGroups();
+            
+            // 存储用户ID
+            const token = localStorage.getItem('token');
+            if (token) {
+                try {
+                    const payload = JSON.parse(atob(token.split('.')[1]));
+                    localStorage.setItem('userId', payload.id);
+                } catch (error) {
+                    console.error('解析token失败:', error);
+                }
+            }
+        }
+        
+        // 页面加载完成后初始化
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>

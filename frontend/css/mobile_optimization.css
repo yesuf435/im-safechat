@@ -1,0 +1,248 @@
+/* 移动端优化样式 */
+:root {
+    --primary-color: #8C1C13;
+    --secondary-color: #F5F5DC;
+    --text-color: #333;
+    --border-color: #ddd;
+}
+
+* {
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f5f5f5;
+    color: var(--text-color);
+    font-size: 16px;
+    line-height: 1.5;
+    -webkit-text-size-adjust: 100%;
+}
+
+/* 响应式布局 */
+@media (max-width: 768px) {
+    .header h2 {
+        font-size: 22px;
+    }
+    
+    .tab {
+        font-size: 18px;
+        padding: 12px 0;
+    }
+    
+    .contact-name, .group-name {
+        font-size: 20px;
+    }
+    
+    .contact-status, .group-desc {
+        font-size: 16px;
+    }
+    
+    .action-btn, .modal-btn {
+        font-size: 18px;
+        padding: 10px 18px;
+    }
+    
+    .search-bar input, .chat-input input {
+        font-size: 18px;
+        padding: 14px;
+    }
+    
+    .search-bar button, .chat-input button {
+        font-size: 18px;
+        padding: 14px 22px;
+    }
+    
+    .message-content {
+        font-size: 18px;
+        padding: 12px;
+    }
+    
+    .bottom-nav .nav-item {
+        font-size: 18px;
+        padding: 16px 0;
+    }
+    
+    .modal-title {
+        font-size: 22px;
+    }
+    
+    .form-group label {
+        font-size: 18px;
+    }
+    
+    .form-group input, .form-group textarea {
+        font-size: 18px;
+        padding: 12px;
+    }
+    
+    .empty-message {
+        font-size: 18px;
+    }
+}
+
+/* 触摸优化 */
+.tab, .contact-item, .group-item, .action-btn, .nav-item, .create-group-btn, 
+.back-btn, .chat-menu, .exit-group-btn, .modal-btn, .invite-friend-btn {
+    cursor: pointer;
+    touch-action: manipulation;
+}
+
+/* 按钮触摸反馈 */
+.action-btn:active, .modal-btn:active, .nav-item:active, 
+.create-group-btn:active, .back-btn:active, .chat-menu:active {
+    opacity: 0.8;
+    transform: scale(0.98);
+}
+
+/* 滚动优化 */
+.contact-list, .group-list, .chat-messages, .member-list, .friend-list {
+    -webkit-overflow-scrolling: touch;
+    scroll-behavior: smooth;
+}
+
+/* 输入框优化 */
+input, textarea {
+    -webkit-appearance: none;
+    border-radius: 5px;
+    font-size: 16px; /* 防止iOS自动缩放 */
+}
+
+/* 禁用长按选择文本 */
+.message-content, .contact-name, .group-name {
+    -webkit-user-select: none;
+    user-select: none;
+}
+
+/* 提高对比度 */
+.primary-text {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.action-btn, .modal-btn {
+    font-weight: bold;
+}
+
+/* 增大点击区域 */
+.tab, .nav-item, .action-btn, .modal-btn {
+    min-height: 44px; /* Apple推荐的最小触摸目标尺寸 */
+}
+
+/* 优化表单元素间距 */
+.form-group {
+    margin-bottom: 20px;
+}
+
+/* 优化模态框 */
+.modal-content {
+    width: 90%;
+    max-width: 500px;
+    border-radius: 15px;
+}
+
+/* 优化底部导航栏 */
+.bottom-nav {
+    height: 60px;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+/* 优化头部 */
+.header {
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 15px;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 优化标签栏 */
+.tab-container {
+    display: flex;
+    background-color: var(--secondary-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.tab {
+    flex: 1;
+    text-align: center;
+    padding: 15px 0;
+    color: var(--text-color);
+    position: relative;
+}
+
+.tab.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.tab.active:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
+.badge {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    min-width: 20px;
+    height: 20px;
+    border-radius: 10px;
+    background-color: red;
+    color: white;
+    font-size: 12px;
+    justify-content: center;
+    align-items: center;
+    padding: 0 5px;
+}
+
+/* 优化列表项 */
+.contact-item, .group-item, .member-item, .friend-item {
+    transition: background-color 0.2s;
+}
+
+.contact-item:active, .group-item:active {
+    background-color: #f0f0f0;
+}
+
+/* 优化按钮 */
+.logout-btn {
+    padding: 8px 15px;
+    background-color: rgba(255, 255, 255, 0.2);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* 优化消息气泡 */
+.message.sent .message-content {
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-left-radius: 15px;
+}
+
+.message.received .message-content {
+    border-top-left-radius: 0;
+    border-bottom-right-radius: 15px;
+    border-bottom-left-radius: 15px;
+    border-top-right-radius: 15px;
+}
+
+/* 隐藏类 */
+.hidden {
+    display: none !important;
+}

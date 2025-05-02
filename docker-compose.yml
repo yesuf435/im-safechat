@@ -1,0 +1,53 @@
+version: '3.8'
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: im-mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: chat_app
+      MYSQL_USER: fcim
+      MYSQL_PASSWORD: MyNew@2025Safe
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./mysql-init:/docker-entrypoint-initdb.d
+    networks:
+      - im-network
+
+  backend:
+    build: ./backend
+    container_name: im-backend
+    restart: always
+    ports:
+      - "3000:3001"
+    depends_on:
+      - mysql
+    environment:
+      - DB_HOST=mysql
+      - DB_USER=fcim
+      - DB_PASSWORD=MyNew@2025Safe
+      - DB_NAME=chat_app
+    networks:
+      - im-network
+
+  frontend:
+    image: nginx:alpine
+    container_name: im-frontend
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
+    depends_on:
+      - backend
+    networks:
+      - im-network
+
+volumes:
+  mysql_data:
+
+networks:
+  im-network:
+    driver: bridge

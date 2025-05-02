@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IM聊天系统 - 会话列表</title>
+    <link rel="stylesheet" href="css/notification_style.css">
+    <link rel="stylesheet" href="css/wechat_style.css">
+</head>
+<body>
+    <div class="header">
+        <h2>IM聊天系统</h2>
+        <button class="logout-btn" id="logoutBtn">退出登录</button>
+    </div>
+    
+    <div class="tab-container">
+        <div class="tab active" data-tab="notification">通知<span class="badge" id="notification-badge">3</span></div>
+        <div class="tab" data-tab="broker">经纪人</div>
+        <div class="tab" data-tab="group">群聊</div>
+        <div class="tab" data-tab="private">私信</div>
+    </div>
+    
+    <div class="content-container">
+        <div class="sidebar" id="notification-list">
+            <div class="notification-item" data-id="notice1">
+                <div class="notification-title">系统维护公告</div>
+                <div class="notification-content">4月30日凌晨1:00-3:00进行服务器升级维护，期间暂停服务。</div>
+                <div class="notification-time">2025-04-26 10:00</div>
+            </div>
+            <div class="notification-item" data-id="notice2">
+                <div class="notification-title">新功能上线</div>
+                <div class="notification-content">IM 系统新增"私信撤回"功能，欢迎体验。</div>
+                <div class="notification-time">2025-04-25 08:30</div>
+            </div>
+            <div class="notification-item" data-id="notice3">
+                <div class="notification-title">拍卖预告</div>
+                <div class="notification-content">明清瓷器专场拍卖将于5月15日开始，敬请关注。</div>
+                <div class="notification-time">2025-04-24 14:15</div>
+            </div>
+        </div>
+        
+        <div class="sidebar hidden" id="broker-list">
+            <div class="notification-item" data-id="broker1">
+                <div class="notification-title">张经纪人</div>
+                <div class="notification-content">这件青花瓷器非常适合您的收藏</div>
+                <div class="notification-time">12:45</div>
+            </div>
+            <div class="notification-item" data-id="broker2">
+                <div class="notification-title">李经纪人</div>
+                <div class="notification-content">新到一批明清字画，推荐您关注</div>
+                <div class="notification-time">周一</div>
+            </div>
+        </div>
+        
+        <div class="sidebar hidden" id="group-list">
+            <div class="notification-item" data-id="group1">
+                <div class="notification-title">瓷器收藏家</div>
+                <div class="notification-content">王先生: 大家看看这个清代官窑</div>
+                <div class="notification-time">14:20</div>
+            </div>
+            <div class="notification-item" data-id="group2">
+                <div class="notification-title">字画鉴赏群</div>
+                <div class="notification-content">张先生: 分享一幅新收的山水画</div>
+                <div class="notification-time">周二</div>
+            </div>
+        </div>
+        
+        <div class="sidebar hidden" id="private-list">
+            <div class="notification-item" data-id="private1">
+                <div class="notification-title">王收藏家</div>
+                <div class="notification-content">这件拍品您觉得值多少合适？</div>
+                <div class="notification-time">16:30</div>
+            </div>
+            <div class="notification-item" data-id="private2">
+                <div class="notification-title">赵鉴定师</div>
+                <div class="notification-content">已经帮您看过那件瓷器了</div>
+                <div class="notification-time">周三</div>
+            </div>
+        </div>
+        
+        <div class="chat-area">
+            <div class="messages" id="messages">
+                <div class="message received">
+                    <div class="user">系统通知</div>
+                    <div class="text">欢迎使用IM聊天系统，请点击左侧会话开始聊天。</div>
+                    <div class="time">刚刚</div>
+                </div>
+            </div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="输入消息...">
+                <button id="sendButton">发送</button>
+            </div>
+        </div>
+    </div>
+<!-- 底部导航栏 -->
+<div class="bottom-nav">
+  <div class="nav-item" onclick="window.location.href='chat_with_notifications.html'">
+    <div class="nav-icon">💬</div>
+    <div class="nav-label">聊天</div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='contacts.html'">
+    <div class="nav-icon">👥</div>
+    <div class="nav-label">联系人</div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='groups.html'">
+    <div class="nav-icon">👨‍👩‍👧‍👦</div>
+    <div class="nav-label">群聊</div>
+  </div>
+  <div class="nav-item" onclick="window.location.href='profile.html'">
+    <div class="nav-icon">👤</div>
+    <div class="nav-label">我的</div>
+  </div>
+</div>
+<style>
+.bottom-nav {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  background-color: #800020;  /* 酒红色 */
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  padding: 10px 0;
+  font-size: 18px;  /* 大字体 */
+}
+
+.bottom-nav a {
+  color: #f5f5dc;  /* 米白色 */
+  text-decoration: none;
+}
+</style>    
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        // 检查用户是否已登录
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        
+        if (!token || !username) {
+            window.location.href = 'login.html';
+        }
+        
+        // 切换标签页
+        const tabs = document.querySelectorAll('.tab');
+        const sidebars = document.querySelectorAll('.sidebar');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // 激活当前标签
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 显示对应的侧边栏
+                sidebars.forEach(sidebar => sidebar.classList.add('hidden'));
+                document.getElementById(`${tabName}-list`).classList.remove('hidden');
+                
+                // 如果是通知标签，清除未读标记
+                if (tabName === 'notification') {
+                    document.getElementById('notification-badge').textContent = '0';
+                }
+            });
+        });
+        
+        // 点击会话项目
+        const notificationItems = document.querySelectorAll('.notification-item');
+        
+        notificationItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const id = this.getAttribute('data-id');
+                const title = this.querySelector('.notification-title').textContent;
+                const content = this.querySelector('.notification-content').textContent;
+                
+                // 显示通知内容
+                const messagesDiv = document.getElementById('messages');
+                messagesDiv.innerHTML = '';
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message received';
+                
+                const userDiv = document.createElement('div');
+                userDiv.className = 'user';
+                userDiv.textContent = title;
+                
+                const textDiv = document.createElement('div');
+                textDiv.className = 'text';
+                textDiv.textContent = content;
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'time';
+                timeDiv.textContent = new Date().toLocaleTimeString();
+                
+                messageDiv.appendChild(userDiv);
+                messageDiv.appendChild(textDiv);
+                messageDiv.appendChild(timeDiv);
+                
+                messagesDiv.appendChild(messageDiv);
+            });
+        });
+        
+        // 连接Socket.io服务器
+        const socket = io('/');
+        
+        // 发送消息
+        document.getElementById('sendButton').addEventListener('click', sendMessage);
+        document.getElementById('messageInput').addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+        
+        // 退出登录
+        document.getElementById('logoutBtn').addEventListener('click', function() {
+            localStorage.removeItem('token');
+            localStorage.removeItem('username');
+            window.location.href = 'login.html';
+        });
+        
+        function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const message = messageInput.value.trim();
+            
+            if (message) {
+                const messagesDiv = document.getElementById('messages');
+                
+                const messageDiv = document.createElement('div');
+                messageDiv.className = 'message sent';
+                
+                const userDiv = document.createElement('div');
+                userDiv.className = 'user';
+                userDiv.textContent = username;
+                
+                const textDiv = document.createElement('div');
+                textDiv.className = 'text';
+                textDiv.textContent = message;
+                
+                const timeDiv = document.createElement('div');
+                timeDiv.className = 'time';
+                timeDiv.textContent = new Date().toLocaleTimeString();
+                
+                messageDiv.appendChild(userDiv);
+                messageDiv.appendChild(textDiv);
+                messageDiv.appendChild(timeDiv);
+                
+                messagesDiv.appendChild(messageDiv);
+                messagesDiv.scrollTop = messagesDiv.scrollHeight;
+                
+                messageInput.value = '';
+            }
+        }
+        
+        // 添加样式
+        document.head.insertAdjacentHTML('beforeend', `
+            <style>
+                .hidden {
+                    display: none;
+                }
+            </style>
+        `);
+    </script>
+</body>
+</html>

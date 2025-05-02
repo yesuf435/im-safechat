@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IM聊天系统 - 登录</title>
+    <link rel="stylesheet" href="css/notification_style.css">
+<link rel="stylesheet" href="css/wechat_style.css">
+    <style>
+        .login-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.1);
+            width: 320px;
+            max-width: 90%;
+        }
+        
+        h2 {
+            text-align: center;
+            color: var(--primary-color);
+            font-size: 28px;
+            margin-bottom: 20px;
+        }
+        
+        input {
+            width: 100%;
+            padding: 15px;
+            margin: 15px 0;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+        
+        button {
+            width: 100%;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            background-color: var(--hover-color);
+        }
+        
+        .register-link {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        
+        .register-link a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: bold;
+        }
+        
+        .register-link a:hover {
+            text-decoration: underline;
+        }
+        
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            background-color: var(--secondary-color);
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <h2>IM聊天系统</h2>
+        <form id="loginForm">
+            <input type="text" id="username" placeholder="请输入用户名" required>
+            <input type="password" id="password" placeholder="请输入密码" required>
+            <button type="submit">登录</button>
+        </form>
+        <div class="register-link">
+            <a href="register.html">没有账号？点击注册</a>
+        </div>
+    </div>
+    <script>
+        document.getElementById('loginForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            
+            if(username.trim() && password.trim()) {
+                // 简化登录流程，直接存储用户名并跳转
+                localStorage.setItem('username', username);
+                localStorage.setItem('token', 'demo-token-' + Date.now());
+                window.location.href = 'chat_with_notifications.html';
+                
+                // 原API登录代码保留但注释掉
+                /*
+                fetch('/api/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ username, password })
+                })
+                .then(response => response.json())
+                .then(data => {
+                    if(data.token) {
+                        localStorage.setItem('token', data.token);
+                        localStorage.setItem('username', username);
+                        window.location.href = 'chat_with_notifications.html';
+                    } else {
+                        alert('登录失败: ' + (data.message || '未知错误'));
+                    }
+                })
+                .catch(error => {
+                    console.error('登录错误:', error);
+                    alert('登录失败，请稍后重试');
+                });
+                */
+            }
+        });
+    </script>
+</body>
+</html>
