@@ -1,0 +1,32 @@
+# To get started with Dependabot version updates, you'll need to specify which
+# package ecosystems to update and where the package manifests are located.
+# Please see the documentation for all configuration options:
+# https://docs.github.com/code-security/dependabot/dependabot-version-updates/configuration-options-for-the-dependabot.yml
+version: 2
+updates:
+  # 示例 1：Node.js 项目的 npm/yarn 包
+  - package-ecosystem: "npm"
+    directory: "/"  # 根目录下的 package.json
+    schedule:
+      interval: "daily"  # 检查频率：daily、weekly、monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+
+  # 示例 2：PHP 项目（Composer）
+  - package-ecosystem: "composer"
+    directory: "/"  # 根目录下的 composer.json
+    schedule:
+      interval: "weekly"
+
+  # 示例 3：Python 项目（pip）
+  - package-ecosystem: "pip"
+    directory: "/"  # 根目录下的 requirements.txt
+    schedule:
+      interval: "daily"
+
+  # 示例 4：Dockerfile 更新
+  - package-ecosystem: "docker"
+    directory: "/"  # 根目录下的 Dockerfile
+    schedule:
+      interval: "weekly"
