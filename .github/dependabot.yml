@@ -26,7 +26,10 @@ updates:
       interval: "daily"
 
   # 示例 4：Dockerfile 更新
-  - package-ecosystem: "docker"
-    directory: "/"  # 根目录下的 Dockerfile
+directory: "/"            # 项目的根目录，子目录用相对路径
     schedule:
-      interval: "weekly"
+      interval: "daily"       # 可选值：daily, weekly, monthly
+    open-pull-requests-limit: 5
+    commit-message:
+      prefix: "deps"
+      include: "scope"
