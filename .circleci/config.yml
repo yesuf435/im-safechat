@@ -12,6 +12,7 @@ jobs:
   e2e-playwright:
     docker:
       - image: mcr.microsoft.com/playwright:v1.43.1-jammy
+    working_directory: ~/project
     steps:
       - checkout
       - run:
