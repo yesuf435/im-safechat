@@ -1,0 +1,35 @@
+version: 2.1
+
+jobs:
+  say-hello:
+    docker:
+      - image: cimg/base:current
+    steps:
+      - checkout
+      - run:
+          name: "Say hello"
+          command: "echo Hello, World!"
+  e2e-playwright:
+    docker:
+      - image: mcr.microsoft.com/playwright:v1.43.1-jammy
+    steps:
+      - checkout
+      - run:
+          name: Install dependencies
+          command: npm install
+      - run:
+          name: Install Playwright Browsers
+          command: npx playwright install --with-deps
+      - run:
+          name: Run Playwright end-to-end tests
+          command: npx playwright test
+      - store_artifacts:
+          path: test-results
+          destination: playwright-test-results
+workflows:
+  say-hello-workflow:
+    jobs:
+      - say-hello
+      - e2e-playwright:
+          requires:
+            - say-hello
