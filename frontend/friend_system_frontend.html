@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>IM聊天系统 - 联系人</title>
+    <link rel="stylesheet" href="css/notification_style.css">
+    <style>
+        .contact-container {
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+        }
+        
+        .search-bar {
+            padding: 15px;
+            background-color: var(--secondary-color);
+            display: flex;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .search-bar input {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        
+        .search-bar button {
+            margin-left: 10px;
+            padding: 12px 20px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        
+        .contact-list {
+            flex: 1;
+            overflow-y: auto;
+            background-color: white;
+        }
+        
+        .contact-item {
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .contact-info {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .contact-name {
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--text-color);
+        }
+        
+        .contact-status {
+            font-size: 14px;
+            color: #777;
+            margin-top: 5px;
+        }
+        
+        .contact-action {
+            display: flex;
+        }
+        
+        .action-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        
+        .add-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .accept-btn {
+            background-color: #4CAF50;
+            color: white;
+        }
+        
+        .reject-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .delete-btn {
+            background-color: #f44336;
+            color: white;
+        }
+        
+        .message-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .section-title {
+            padding: 10px 15px;
+            background-color: var(--secondary-color);
+            font-weight: bold;
+            font-size: 16px;
+            color: var(--primary-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .empty-message {
+            padding: 20px;
+            text-align: center;
+            color: #777;
+            font-size: 16px;
+        }
+        
+        .bottom-nav {
+            display: flex;
+            background-color: var(--secondary-color);
+            border-top: 1px solid var(--border-color);
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+        
+        .nav-item {
+            flex: 1;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 16px;
+            color: var(--text-color);
+            cursor: pointer;
+        }
+        
+        .nav-item.active {
+            color: var(--primary-color);
+            font-weight: bold;
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        
+        .modal-content {
+            background-color: white;
+            margin: 15% auto;
+            padding: 20px;
+            border-radius: 10px;
+            width: 80%;
+            max-width: 500px;
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: var(--primary-color);
+        }
+        
+        .modal-body {
+            margin-bottom: 20px;
+        }
+        
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+        }
+        
+        .modal-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            margin-left: 10px;
+        }
+        
+        .cancel-btn {
+            background-color: #f1f1f1;
+            color: var(--text-color);
+        }
+        
+        .confirm-btn {
+            background-color: var(--primary-color);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>联系人</h2>
+        <button class="logout-btn" id="logoutBtn">退出登录</button>
+    </div>
+    
+    <div class="tab-container">
+        <div class="tab" data-tab="friends">好友</div>
+        <div class="tab active" data-tab="requests">好友请求<span class="badge" id="requests-badge">0</span></div>
+        <div class="tab" data-tab="search">添加好友</div>
+    </div>
+    
+    <div class="contact-container">
+        <!-- 好友列表 -->
+        <div class="contact-list hidden" id="friends-list">
+            <div class="section-title">我的好友</div>
+            <div id="friends-container">
+                <div class="empty-message">暂无好友</div>
+            </div>
+        </div>
+        
+        <!-- 好友请求列表 -->
+        <div class="contact-list" id="requests-list">
+            <div class="section-title">收到的请求</div>
+            <div id="received-requests-container">
+                <div class="empty-message">暂无收到的好友请求</div>
+            </div>
+            
+            <div class="section-title">发送的请求</div>
+            <div id="sent-requests-container">
+                <div class="empty-message">暂无发送的好友请求</div>
+            </div>
+        </div>
+        
+        <!-- 添加好友 -->
+        <div class="contact-list hidden" id="search-list">
+            <div class="search-bar">
+                <input type="text" id="searchInput" placeholder="输入用户名搜索...">
+                <button id="searchButton">搜索</button>
+            </div>
+            <div id="search-results-container">
+                <div class="empty-message">请输入用户名进行搜索</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="bottom-nav">
+        <div class="nav-item" data-page="chat">聊天</div>
+        <div class="nav-item" data-page="notification">通知</div>
+        <div class="nav-item active" data-page="contacts">联系人</div>
+        <div class="nav-item" data-page="me">我的</div>
+    </div>
+    
+    <!-- 确认删除好友模态框 -->
+    <div class="modal" id="deleteModal">
+        <div class="modal-content">
+            <div class="modal-title">删除好友</div>
+            <div class="modal-body">
+                确定要删除该好友吗？删除后将无法接收对方的消息。
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn cancel-btn" id="cancelDelete">取消</button>
+                <button class="modal-btn confirm-btn" id="confirmDelete">确定</button>
+            </div>
+        </div>
+    </div>
+    
+    <script src="https://cdn.socket.io/4.6.0/socket.io.min.js"></script>
+    <script>
+        // 检查用户是否已登录
+        const token = localStorage.getItem('token');
+        const username = localStorage.getItem('username');
+        
+        if (!token || !username) {
+            window.location.href = 'login.html';
+        }
+        
+        // 全局变量
+        let currentFriendId = null;
+        
+        // 切换标签页
+        const tabs = document.querySelectorAll('.tab');
+        const contactLists = document.querySelectorAll('.contact-list');
+        
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                const tabName = this.getAttribute('data-tab');
+                
+                // 激活当前标签
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 显示对应的联系人列表
+                contactLists.forEach(list => list.classList.add('hidden'));
+                document.getElementById(`${tabName}-list`).classList.remove('hidden');
+                
+                // 如果是请求标签，清除未读标记
+                if (tabName === 'requests') {
+                    document.getElementById('requests-badge').textContent = '0';
+                    document.getElementById('requests-badge').style.display = 'none';
+                }
+            });
+        });
+        
+        // 底部导航
+        const navItems = document.querySelectorAll('.nav-item');
+        
+        navItems.forEach(item => {
+            item.addEventListener('click', function() {
+                const pageName = this.getAttribute('data-page');
+                
+                // 激活当前导航项
+                navItems.forEach(i => i.classList.remove('active'));
+                this.classList.add('active');
+                
+                // 页面跳转
+                if (pageName === 'chat') {
+                    window.location.href = 'chat_with_notifications.html';
+                } else if (pageName === 'notification') {
+                    window.location.href = 'chat_with_notifications.html';
+                    // 在chat_with_notifications.html中激活通知标签
+                    localStorage.setItem('activeTab', 'notification');
+                } else if (pageName === 'me') {
+                    // 个人设置页面，暂未实现
+                    alert('个人设置功能正在开发中');
+                }
+            });
+        });
+        
+        // 加载好友列表
+        function loadFriends() {
+            fetch('/api/friends', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const friendsContainer = document.getElementById('friends-container');
+                
+                if (data.friends && data.friends.length > 0) {
+                    friendsContainer.innerHTML = '';
+                    
+                    data.friends.forEach(friend => {
+                        const friendItem = document.createElement('div');
+                        friendItem.className = 'contact-item';
+                        friendItem.innerHTML = `
+                            <div class="contact-info">
+                                <div class="contact-name">${friend.username}</div>
+                            </div>
+                            <div class="contact-action">
+                                <button class="action-btn message-btn" data-id="${friend.id}" data-name="${friend.username}">发消息</button>
+                                <button class="action-btn delete-btn" data-id="${friend.id}" data-name="${friend.username}">删除</button>
+                            </div>
+                        `;
+                        friendsContainer.appendChild(friendItem);
+                    });
+                    
+                    // 添加发消息按钮事件
+                    document.querySelectorAll('.message-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const friendId = this.getAttribute('data-id');
+                            const friendName = this.getAttribute('data-name');
+                            // 跳转到聊天页面
+                            localStorage.setItem('currentChat', JSON.stringify({
+                                id: friendId,
+                                name: friendName,
+                                type: 'private'
+                            }));
+                            window.location.href = 'chat_with_notifications.html';
+                        });
+                    });
+                    
+                    // 添加删除按钮事件
+                    document.querySelectorAll('.delete-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const friendId = this.getAttribute('data-id');
+                            const friendName = this.getAttribute('data-name');
+                            
+                            // 显示确认删除模态框
+                            document.getElementById('deleteModal').style.display = 'block';
+                            currentFriendId = friendId;
+                            
+                            // 更新模态框内容
+                            document.querySelector('.modal-body').textContent = `确定要删除好友"${friendName}"吗？删除后将无法接收对方的消息。`;
+                        });
+                    });
+                } else {
+                    friendsContainer.innerHTML = '<div class="empty-message">暂无好友</div>';
+                }
+            })
+            .catch(error => {
+                console.error('获取好友列表失败:', error);
+                alert('获取好友列表失败，请稍后重试');
+            });
+        }
+        
+        // 加载好友请求列表
+        function loadFriendRequests() {
+            fetch('/api/friend-requests', {
+                headers: {
+                    'Authorization': `Bearer ${token}`
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                const receivedContainer = document.getElementById('received-requests-container');
+                const sentContainer = document.getElementById('sent-requests-container');
+                
+                // 处理收到的请求
+                if (data.received && data.received.length > 0) {
+                    receivedContainer.innerHTML = '';
+                    
+                    data.received.forEach(request => {
+                        const requestItem = document.createElement('div');
+                        requestItem.className = 'contact-item';
+                        requestItem.innerHTML = `
+                            <div class="contact-info">
+                                <div class="contact-name">${request.sender_username}</div>
+                                <div class="contact-status">请求添加您为好友</div>
+                            </div>
+                            <div class="contact-action">
+                                <button class="action-btn accept-btn" data-id="${request.id}">接受</button>
+                                <button class="action-btn reject-btn" data-id="${request.id}">拒绝</button>
+                            </div>
+                        `;
+                        receivedContainer.appendChild(requestItem);
+                    });
+                    
+                    // 更新未读请求数量
+                    document.getElementById('requests-badge').textContent = data.received.length;
+                    document.getElementById('requests-badge').style.display = 'flex';
+                    
+                    // 添加接受按钮事件
+                    document.querySelectorAll('.accept-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const requestId = this.getAttribute('data-id');
+                            handleFriendRequest(requestId, 'accepted');
+                        });
+                    });
+                    
+                    // 添加拒绝按钮事件
+                    document.querySelectorAll('.reject-btn').forEach(btn => {
+                        btn.addEventListener('click', function() {
+                            const requestId = this.getAttribute('data-id');
+                            handleFriendRequest(requestId, 'rejected');
+                        });
+                    });
+                } else {
+                    receivedContainer.innerHTML = '<div class="empty-message">暂无收到的好友请求</div>';
+                    document.getElementById('requests-badge').style.display = 'none';
+                }
+        
+(Content truncated due to size limit. Use line ranges to read in chunks)

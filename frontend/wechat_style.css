@@ -1,0 +1,803 @@
+/* 微信风格UI优化 */
+
+:root {
+    --primary-color: #8C1C13; /* 酒红色 */
+    --secondary-color: #F5F5DC; /* 米白色 */
+    --text-color: #333;
+    --border-color: #ddd;
+    --highlight-color: #e6e6e6;
+    --success-color: #4CAF50;
+    --danger-color: #f44336;
+    --light-gray: #f1f1f1;
+    --medium-gray: #999;
+    --dark-gray: #666;
+}
+
+/* 全局样式 */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Microsoft YaHei', Arial, sans-serif;
+    background-color: var(--light-gray);
+    color: var(--text-color);
+    font-size: 16px;
+    line-height: 1.5;
+}
+
+/* 头部导航栏 */
+.header {
+    background-color: var(--primary-color);
+    color: white;
+    padding: 15px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: fixed;
+    top: 0;
+    width: 100%;
+    z-index: 100;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.header h2 {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.header-btn, .logout-btn {
+    background: none;
+    border: 1px solid white;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+/* 底部导航栏 */
+.bottom-nav {
+    display: flex;
+    background-color: var(--secondary-color);
+    border-top: 1px solid var(--border-color);
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    height: 60px;
+    box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.nav-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 8px 0;
+    font-size: 14px;
+    color: var(--text-color);
+    cursor: pointer;
+}
+
+.nav-item.active {
+    color: var(--primary-color);
+}
+
+.nav-icon {
+    font-size: 24px;
+    margin-bottom: 2px;
+}
+
+/* 主容器 */
+.main-container {
+    margin-top: 56px;
+    margin-bottom: 60px;
+    height: calc(100vh - 116px);
+    overflow-y: auto;
+    background-color: white;
+}
+
+/* 标签页 */
+.tab-container {
+    display: flex;
+    background-color: var(--secondary-color);
+    border-bottom: 1px solid var(--border-color);
+    position: fixed;
+    top: 56px;
+    width: 100%;
+    z-index: 99;
+}
+
+.tab {
+    flex: 1;
+    padding: 15px 0;
+    text-align: center;
+    font-size: 16px;
+    color: var(--text-color);
+    cursor: pointer;
+    position: relative;
+}
+
+.tab.active {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.tab.active:after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 25%;
+    width: 50%;
+    height: 3px;
+    background-color: var(--primary-color);
+}
+
+.badge {
+    display: none;
+    position: absolute;
+    top: 5px;
+    right: 20%;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 列表项样式 */
+.contact-item, .group-item {
+    padding: 15px;
+    border-bottom: 1px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    position: relative;
+}
+
+.contact-avatar, .group-avatar {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 15px;
+    font-size: 20px;
+    color: white;
+}
+
+.group-avatar {
+    border-radius: 10px;
+}
+
+.contact-info, .group-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+.contact-name, .group-name {
+    font-size: 18px;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.contact-status, .group-message {
+    font-size: 14px;
+    color: var(--medium-gray);
+    margin-top: 5px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 200px;
+}
+
+.group-time {
+    font-size: 12px;
+    color: var(--medium-gray);
+    position: absolute;
+    top: 15px;
+    right: 15px;
+}
+
+/* 按钮样式 */
+.action-btn {
+    padding: 8px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.add-btn, .message-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.accept-btn {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.reject-btn, .delete-btn {
+    background-color: var(--danger-color);
+    color: white;
+}
+
+/* 搜索栏 */
+.search-bar {
+    padding: 15px;
+    background-color: var(--secondary-color);
+    display: flex;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.search-bar input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.search-bar button {
+    margin-left: 10px;
+    padding: 12px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+/* 模态框 */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0,0,0,0.5);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 15% auto;
+    padding: 20px;
+    border-radius: 10px;
+    width: 80%;
+    max-width: 500px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+}
+
+.modal-title {
+    font-size: 20px;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: var(--primary-color);
+}
+
+.modal-body {
+    margin-bottom: 20px;
+}
+
+.modal-footer {
+    display: flex;
+    justify-content: flex-end;
+}
+
+.modal-btn {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 16px;
+    margin-left: 10px;
+}
+
+.cancel-btn {
+    background-color: #f1f1f1;
+    color: var(--text-color);
+}
+
+.confirm-btn {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* 表单样式 */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.form-group input, .form-group textarea {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+.form-group textarea {
+    height: 80px;
+    resize: none;
+}
+
+/* 加载动画 */
+.loading {
+    display: none;
+    text-align: center;
+    padding: 20px;
+}
+
+.loading-spinner {
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    width: 30px;
+    height: 30px;
+    animation: spin 2s linear infinite;
+    margin: 0 auto;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* 消息提示 */
+.toast {
+    position: fixed;
+    top: 80px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: rgba(0, 0, 0, 0.7);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    z-index: 1000;
+    display: none;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
+}
+
+/* 空状态 */
+.empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 50px 20px;
+    text-align: center;
+}
+
+.empty-icon {
+    font-size: 60px;
+    color: #ccc;
+    margin-bottom: 20px;
+}
+
+.empty-text {
+    font-size: 16px;
+    color: #999;
+    margin-bottom: 20px;
+}
+
+.empty-btn {
+    padding: 10px 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* 聊天气泡样式 */
+.chat-container {
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message-item {
+    display: flex;
+    margin-bottom: 15px;
+    max-width: 80%;
+}
+
+.message-item.sent {
+    align-self: flex-end;
+    flex-direction: row-reverse;
+}
+
+.message-item.received {
+    align-self: flex-start;
+}
+
+.message-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    color: white;
+    margin: 0 10px;
+}
+
+.message-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.message-sender {
+    font-size: 12px;
+    color: var(--medium-gray);
+    margin-bottom: 3px;
+}
+
+.message-bubble {
+    padding: 10px 15px;
+    border-radius: 18px;
+    font-size: 16px;
+    max-width: 100%;
+    word-wrap: break-word;
+}
+
+.message-item.sent .message-bubble {
+    background-color: var(--primary-color);
+    color: white;
+    border-top-right-radius: 5px;
+}
+
+.message-item.received .message-bubble {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border-top-left-radius: 5px;
+}
+
+.message-time {
+    font-size: 12px;
+    color: var(--medium-gray);
+    margin-top: 3px;
+    align-self: flex-end;
+}
+
+/* 聊天输入框 */
+.chat-input-container {
+    position: fixed;
+    bottom: 60px;
+    left: 0;
+    right: 0;
+    background-color: var(--secondary-color);
+    padding: 10px;
+    display: flex;
+    align-items: center;
+    border-top: 1px solid var(--border-color);
+}
+
+.chat-input {
+    flex: 1;
+    padding: 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    font-size: 16px;
+    margin-right: 10px;
+}
+
+.chat-send-btn {
+    padding: 10px 15px;
+    background-color: var(--primary-color);
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+/* 媒体按钮 */
+.media-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 20px;
+    margin-right: 10px;
+    border: 1px solid var(--border-color);
+    cursor: pointer;
+}
+
+/* 响应式设计 */
+@media (max-width: 768px) {
+    .contact-item, .group-item {
+        padding: 12px;
+    }
+    
+    .contact-avatar, .group-avatar {
+        width: 45px;
+        height: 45px;
+        font-size: 18px;
+    }
+    
+    .contact-name, .group-name {
+        font-size: 16px;
+    }
+    
+    .contact-status, .group-message {
+        font-size: 13px;
+    }
+    
+    .action-btn {
+        padding: 6px 12px;
+        font-size: 14px;
+    }
+}
+
+/* 大字体模式 */
+.large-font-mode {
+    font-size: 18px;
+}
+
+.large-font-mode .header h2 {
+    font-size: 22px;
+}
+
+.large-font-mode .contact-name, .large-font-mode .group-name {
+    font-size: 20px;
+}
+
+.large-font-mode .contact-status, .large-font-mode .group-message {
+    font-size: 16px;
+}
+
+.large-font-mode .action-btn {
+    font-size: 18px;
+}
+
+.large-font-mode .nav-item {
+    font-size: 16px;
+}
+
+.large-font-mode .nav-icon {
+    font-size: 28px;
+}
+
+.large-font-mode .message-bubble {
+    font-size: 18px;
+}
+
+/* 创建群聊按钮 */
+.create-group-btn, .add-friend-btn {
+    position: fixed;
+    bottom: 70px;
+    right: 20px;
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: var(--primary-color);
+    color: white;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 24px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    z-index: 99;
+    cursor: pointer;
+}
+
+/* 好友选择器 */
+.friend-selector {
+    max-height: 200px;
+    overflow-y: auto;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    margin-top: 10px;
+}
+
+.friend-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.friend-item:last-child {
+    border-bottom: none;
+}
+
+.friend-checkbox {
+    margin-right: 10px;
+}
+
+.friend-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: #e1e1e1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-right: 10px;
+    font-size: 16px;
+    color: var(--primary-color);
+}
+
+.friend-name {
+    font-size: 16px;
+}
+
+/* 图片消息 */
+.image-message {
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* 语音消息 */
+.voice-message {
+    display: flex;
+    align-items: center;
+    min-width: 80px;
+}
+
+.voice-icon {
+    font-size: 20px;
+    margin-right: 5px;
+}
+
+.voice-duration {
+    font-size: 14px;
+}
+
+/* 文件消息 */
+.file-message {
+    display: flex;
+    align-items: center;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 5px;
+    padding: 10px;
+}
+
+.file-icon {
+    font-size: 24px;
+    margin-right: 10px;
+    color: var(--primary-color);
+}
+
+.file-info {
+    display: flex;
+    flex-direction: column;
+}
+
+.file-name {
+    font-size: 14px;
+    font-weight: bold;
+}
+
+.file-size {
+    font-size: 12px;
+    color: var(--medium-gray);
+}
+
+/* 消息状态 */
+.message-status {
+    font-size: 12px;
+    color: var(--medium-gray);
+    margin-top: 3px;
+    align-self: flex-end;
+}
+
+.message-status.sending {
+    color: var(--medium-gray);
+}
+
+.message-status.sent {
+    color: var(--medium-gray);
+}
+
+.message-status.delivered {
+    color: var(--medium-gray);
+}
+
+.message-status.read {
+    color: var(--success-color);
+}
+
+.message-status.failed {
+    color: var(--danger-color);
+}
+
+/* 已读回执 */
+.read-receipt {
+    font-size: 12px;
+    color: var(--medium-gray);
+    margin-top: 3px;
+    align-self: flex-end;
+}
+
+/* 消息撤回 */
+.recalled-message {
+    font-style: italic;
+    color: var(--medium-gray);
+}
+
+/* 群设置图标 */
+.pinned-icon, .muted-icon {
+    position: absolute;
+    color: var(--medium-gray);
+    font-size: 14px;
+}
+
+.pinned-icon {
+    top: 40px;
+    right: 15px;
+    color: var(--primary-color);
+}
+
+.muted-icon {
+    top: 40px;
+    right: 35px;
+}
+
+/* 未读消息数 */
+.group-badge {
+    position: absolute;
+    bottom: 15px;
+    right: 15px;
+    background-color: var(--danger-color);
+    color: white;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 12px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+/* 分割线 */
+.section-title {
+    padding: 10px 15px;
+    background-color: var(--secondary-color);
+    font-weight: bold;
+    font-size: 16px;
+    color: var(--primary-color);
+    border-bottom: 1px solid var(--border-color);
+}
+
+/* 空消息 */
+.empty-message {
+    padding: 20px;
+    text-align: center;
+    color: var(--medium-gray);
+    font-size: 16px;
+}
+
+/* 隐藏元素 */
+.hidden {
+    display: none;
+}
