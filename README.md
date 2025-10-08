@@ -60,7 +60,7 @@ frontend/modern/     纯前端现代化 UI，可直接在浏览器打开 index.h
    bash deploy/create-baota-package.sh
    ```
 
-   脚本会在 `dist/` 下生成 `safechat-baota-release.tar.gz`，其中包含后端、前端、启动脚本与精简版部署指南。详细操作步骤见 `deploy/BAOTA_DEPLOY.md`。
+   脚本会在 `dist/` 下生成 `safechat-baota-release.tar.gz` 与 `safechat-baota-release.zip` 两个压缩包，内容一致，包含后端、前端、启动脚本与精简版部署指南。详细操作步骤见 `deploy/BAOTA_DEPLOY.md`。
 
 ## 自动化测试
 

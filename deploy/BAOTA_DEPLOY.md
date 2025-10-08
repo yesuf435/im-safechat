@@ -10,7 +10,7 @@
 bash deploy/create-baota-package.sh
 ```
 
-脚本会在 `dist/` 目录下产出 `safechat-baota-release.tar.gz`，内部结构如下：
+脚本会在 `dist/` 目录下产出 `safechat-baota-release.tar.gz` 与 `safechat-baota-release.zip` 两个文件（内容完全相同），内部结构如下：
 
 ```
 safechat/
@@ -29,7 +29,7 @@ safechat/
 ## 2. 上传到宝塔
 
 1. 登录宝塔面板，进入 **文件** 管理。
-2. 将 `safechat-baota-release.tar.gz` 上传至目标目录（例如 `/www/wwwroot/`）。
+2. 将 `safechat-baota-release.tar.gz` 或 `safechat-baota-release.zip` 上传至目标目录（例如 `/www/wwwroot/`）。
 3. 在宝塔中解压，得到 `safechat/` 目录。
 
 ## 3. 配置 Node 项目
