@@ -1,89 +1,186 @@
 # SafeChat 现代即时通信系统
 
-SafeChat 提供一套可直接运行的现代化即时通信体验，包含好友管理、一对一私聊、群聊以及跨设备消息记录功能。后端基于 Node.js + Express + Socket.IO，数据存储使用 MongoDB 持久化，前端采用现代 UI 风格的纯前端实现。
+SafeChat 是一个功能完整的现代化即时通信系统，提供好友管理、一对一私聊、群聊以及跨设备消息同步功能。
 
-## 功能概览
+## ✨ 特性
 
-- 🔐 用户注册 / 登录，采用 JWT 认证
-- 👥 好友搜索、发送请求、接受或拒绝
-- 💬 一对一私聊会话自动创建与消息同步
-- 🧑‍🤝‍🧑 群聊创建与实时消息同步
-- 🔄 消息、好友、请求数据实时刷新并存储于 MongoDB，支持跨设备访问
-- 🖥️ 现代化前端界面，内置 Socket 连接状态处理和消息通知
-- 📊 自带后台控制台，实时查看用户、会话、消息等关键指标
+- 🔐 **用户认证**: JWT 令牌的登录和注册系统
+- 💬 **实时消息**: 基于 Socket.IO 的实时聊天功能
+- 👥 **好友系统**: 好友搜索、发送请求、接受或拒绝
+- 🧑‍🤝‍🧑 **群聊功能**: 创建群组并进行实时群聊
+- 📱 **响应式设计**: 完美适配手机和桌面端
+- 🌍 **国际化**: 支持中文和英文切换
+- 🎨 **现代 UI**: 采用 Material Design 设计语言
+- 🔄 **数据持久化**: MongoDB 数据库，支持跨设备访问
+- 📊 **后台管理**: 实时查看用户、会话、消息等关键指标
 
-## 目录结构
+## 🏗️ 技术栈
 
+### 后端
+- **Node.js + Express**: 服务器框架
+- **Socket.IO**: 实时通信
+- **MongoDB + Mongoose**: 数据库
+- **JWT**: 身份认证
+- **bcryptjs**: 密码加密
+
+### 前端
+- **React 19**: UI 框架
+- **TypeScript**: 类型安全
+- **Vite**: 构建工具
+- **Material UI**: 组件库
+- **Socket.IO Client**: 实时通信客户端
+- **React Router**: 路由管理
+- **i18next**: 国际化
+- **Axios**: HTTP 客户端
+
+## 🚀 快速开始
+
+### 使用 Docker（推荐）
+
+```bash
+# 克隆仓库
+git clone https://github.com/yesuf435/im-safechat.git
+cd im-safechat
+
+# 启动所有服务
+docker-compose up -d
+
+# 访问应用
+# 打开浏览器访问 http://localhost
 ```
-backend/             Node.js + Express + Socket.IO + MongoDB 后端
-frontend/modern/     纯前端现代化 UI，可直接在浏览器打开 index.html
-```
 
-## 环境准备
+### 本地开发
 
-1. **安装依赖**
+详细步骤请查看 [快速开始指南](./QUICKSTART.md)
 
+简要步骤：
+
+1. **安装 MongoDB** 并启动服务
+2. **启动后端**:
    ```bash
    cd backend
    npm install
-   ```
-
-2. **启动 MongoDB**
-
-   确保本机或服务器已启动 MongoDB 服务（默认连接 `mongodb://localhost:27017/safechat`）。如需自定义连接串，设置环境变量 `MONGODB_URI`。
-
-3. **运行后端服务**
-
-   ```bash
    npm start
    ```
-
-   可选环境变量：
-
-   - `PORT`（默认 3001）
-   - `JWT_SECRET` 自定义 JWT 密钥
-   - `ALLOWED_ORIGINS` 逗号分隔的允许跨域地址，例如 `http://localhost:5173,http://localhost:5500`
-
-4. **打开前端页面**
-
-   使用任意静态文件服务器或直接在浏览器中打开 `frontend/modern/index.html`。登录页内置“体验界面预览”按钮，可在未登录状态下快速浏览私信、群聊等界面布局。
-
-5. **访问后台控制台（可选）**
-
-   登录成功后，可直接访问 `frontend/modern/admin.html` 获取实时的用户、会话与消息概览。控制台会复用当前浏览器中的登录令牌。
-
-6. **一键打包用于宝塔面板部署（可选）**
-
-   如果需要在宝塔 CentOS 7 服务器快速部署，可运行：
-
+3. **启动前端**:
    ```bash
-   bash deploy/create-baota-package.sh
+   cd frontend/im-frontend
+   npm install
+   npm run dev
    ```
+4. **访问应用**: http://localhost:5173
 
-   脚本会在 `dist/` 下生成 `safechat-baota-release.tar.gz` 与 `safechat-baota-release.zip` 两个压缩包，内容一致，包含后端、前端、启动脚本与精简版部署指南。详细操作步骤见 `deploy/BAOTA_DEPLOY.md`。
+## 📁 目录结构
 
-## 自动化测试
+```
+.
+├── backend/                 # Node.js 后端
+│   ├── app.js              # 主应用文件
+│   ├── package.json        # 后端依赖
+│   ├── Dockerfile          # Docker 镜像配置
+│   └── tests/              # 测试文件
+├── frontend/
+│   └── im-frontend/        # React + TypeScript 前端
+│       ├── src/
+│       │   ├── api/        # API 服务层
+│       │   ├── components/ # React 组件
+│       │   ├── pages/      # 页面组件
+│       │   ├── services/   # 业务逻辑服务
+│       │   ├── theme/      # Material UI 主题
+│       │   └── i18n.ts     # 国际化配置
+│       ├── package.json    # 前端依赖
+│       ├── Dockerfile      # Docker 镜像配置
+│       └── nginx.conf      # Nginx 配置
+├── docker-compose.yml      # Docker Compose 配置
+├── DEPLOYMENT.md           # 部署指南
+├── QUICKSTART.md           # 快速开始指南
+└── README.md               # 本文件
+```
 
-后端提供基于 Jest + Supertest 的端到端测试用例，用于覆盖注册登录、好友请求、一对一和群聊核心流程。
+## 📖 文档
+
+- [快速开始指南](./QUICKSTART.md) - 5 分钟上手
+- [完整部署指南](./DEPLOYMENT.md) - 生产环境部署
+- [前端文档](./frontend/im-frontend/README.md) - 前端架构和开发
+
+## 🎯 功能概览
+
+### 1. 登录/注册页面
+- 现代化的登录和注册表单
+- Material UI 设计
+- 表单验证和错误提示
+- 中英文切换
+
+### 2. 消息列表页面
+- 会话列表展示
+- 未读消息数量标记
+- 用户头像显示
+- 最后一条消息预览
+- 实时更新
+
+### 3. 聊天窗口页面
+- 实时消息发送和接收
+- 消息历史记录
+- 表情符号支持（UI 已就绪）
+- 图片和文件发送（UI 已就绪）
+- 语音消息（UI 已就绪）
+- 回车发送消息
+
+### 4. 联系人页面
+- 好友列表展示
+- 搜索和添加好友
+- 好友请求管理
+- 发起私聊
+
+### 5. 通知页面
+- 系统通知（占位符）
+- 好友请求通知
+- 消息通知
+
+### 6. 设置页面
+- 个人资料显示
+- 语言切换（中文/英文）
+- 主题切换（UI 已就绪）
+- 通知设置
+- 退出登录
+
+## 🧪 自动化测试
+
+后端提供基于 Jest + Supertest 的端到端测试用例。
 
 ```bash
 cd backend
 npm test
 ```
 
-> **提示**：测试默认会使用 `mongodb-memory-server` 拉取内存版 MongoDB。若运行环境无法访问 MongoDB 官方镜像源，测试会自动跳过下载失败的用例并给出提示。
+## 🌍 环境变量
 
-## 开发提示
+### 后端 (.env)
 
-- Socket 连接成功后会自动加入当前会话房间，实现消息实时推送。
-- 所有 REST API 均以 `/api` 开头，需要在请求头附带 `Authorization: Bearer <token>`。
-- 登录页支持快速切换登录/注册表单，并提供界面预览模式以便演示效果。
-- 后台控制台提供一键刷新按钮，可随时查看最新的用户与会话统计。
+```env
+PORT=3001
+MONGODB_URI=mongodb://localhost:27017/safechat
+JWT_SECRET=your_super_secret_key
+ALLOWED_ORIGINS=http://localhost:5173,http://localhost:5175
+```
 
-## 常见问题
+### 前端 (.env)
 
-- **登录后长时间未操作**：若 JWT 过期或 Socket 认证失败，前端会自动退出登录，请重新登录。
-- **无法创建群聊**：需至少拥有一位好友，创建时可输入逗号分隔的好友用户名选择成员，留空则默认全部好友加入。
-- **无法连接后端**：检查 `ALLOWED_ORIGINS` 配置是否包含前端页面地址，并确保后端服务已启动。
+```env
+VITE_API_BASE=http://localhost:3001
+```
 
-祝使用愉快！
+## 📱 浏览器支持
+
+- Chrome/Edge（最新版）
+- Firefox（最新版）
+- Safari（最新版）
+- 移动浏览器（iOS Safari、Chrome）
+
+## 🐛 问题反馈
+
+遇到问题？请在 [GitHub Issues](https://github.com/yesuf435/im-safechat/issues) 提交。
+
+---
+
+**SafeChat** - 让沟通更简单 💬
