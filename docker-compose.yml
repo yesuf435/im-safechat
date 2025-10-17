@@ -1,70 +1,53 @@
 version: '3.8'
-
 services:
   mongodb:
-    image: mongo:6.0
-    container_name: safechat-mongodb
+    image: mongo:7
+    container_name: im-mongodb
     restart: always
-    volumes:
-      - mongo_data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=safechat
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: MyNew@2025Safe
+      MONGO_INITDB_DATABASE: safechat
+    volumes:
+      - mongodb_data:/data/db
+    networks:
+      - im-network
     ports:
       - "27017:27017"
-    networks:
-      - safechat-network
-    healthcheck:
-      test: echo 'db.runCommand("ping").ok' | mongosh localhost:27017/safechat --quiet
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    container_name: safechat-backend
+    build: ./backend
+    container_name: im-backend
     restart: always
-    environment:
-      - PORT=3001
-      - MONGODB_URI=mongodb://mongodb:27017/safechat
-      - JWT_SECRET=${JWT_SECRET:-change_this_secret_key_in_production}
-      - ALLOWED_ORIGINS=${ALLOWED_ORIGINS:-*}
     ports:
-      - "3001:3001"
+      - "3000:3001"
     depends_on:
-      mongodb:
-        condition: service_healthy
+      - mongodb
+    environment:
+      - MONGODB_URI=mongodb://admin:MyNew@2025Safe@mongodb:27017/safechat?authSource=admin
+      - JWT_SECRET=super_secret_safechat_key_2025
+      - PORT=3001
+      - ALLOWED_ORIGINS=*
     networks:
-      - safechat-network
-    healthcheck:
-      test: ["CMD", "node", "-e", "require('http').get('http://localhost:3001/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - im-network
 
   frontend:
-    build:
-      context: ./frontend/im-frontend
-      dockerfile: Dockerfile
-    container_name: safechat-frontend
+    image: nginx:alpine
+    container_name: im-frontend
     restart: always
     ports:
       - "80:80"
+    volumes:
+      - ./frontend:/usr/share/nginx/html
+      - ./nginx.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - backend
     networks:
-      - safechat-network
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/health"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+      - im-network
 
 volumes:
-  mongo_data:
-    driver: local
+  mongodb_data:
 
 networks:
-  safechat-network:
+  im-network:
     driver: bridge
