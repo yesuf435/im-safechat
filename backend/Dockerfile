@@ -11,8 +11,8 @@ RUN npm ci --only=production
 # Copy application code
 COPY . .
 
-# Create uploads directory
-RUN mkdir -p uploads
+# Create uploads directory and set ownership for non-root user
+RUN mkdir -p uploads && chown -R node:node /app/uploads
 
 # Expose port
 EXPOSE 3001
