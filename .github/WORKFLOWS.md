@@ -130,7 +130,7 @@ The workflows use the following environment variables:
 ### Development (docker-compose.yml)
 - `MONGODB_URI`: MongoDB connection string (hardcoded for dev)
 - `JWT_SECRET`: JWT signing secret (hardcoded for dev)
-- `PORT`: Backend service port (3001)
+- `PORT`: Backend internal port (3001, mapped to 3000 externally)
 - `ALLOWED_ORIGINS`: CORS allowed origins (*)
 
 ### Production (docker-compose.prod.yml)
@@ -139,7 +139,7 @@ The workflows use the following environment variables:
 - `MONGO_INITDB_DATABASE`: Initial database name
 - `MONGODB_URI`: Full MongoDB connection string
 - `JWT_SECRET`: Production JWT secret (use strong secret!)
-- `PORT`: Backend service port
+- `PORT`: Backend internal port (3001, mapped to 3000 externally)
 - `ALLOWED_ORIGINS`: Production CORS origins
 
 ## Health Checks
@@ -183,7 +183,7 @@ If docker-compose fails to start:
 If health checks fail:
 1. Check backend logs: `docker compose logs backend`
 2. Verify MongoDB connection: `docker compose logs mongodb`
-3. Test endpoint manually: `curl http://localhost:3000/health`
+3. Test endpoint manually: `curl http://localhost:3000/health` (external port 3000 maps to internal port 3001)
 4. Ensure sufficient startup time (adjust wait time in workflow)
 
 ## Notes
