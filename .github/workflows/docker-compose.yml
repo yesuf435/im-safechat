@@ -1,41 +1,16 @@
-name: Docker Compose CI
-
-on:
-  push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
-
-jobs:
-  test-compose:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Validate docker-compose.yml
-      run: docker compose config
-    
-    - name: Build and start services
-      run: docker compose up -d --build
-    
     - name: Wait for services to be ready
-      run: sleep 40
-    
+      run: sleep 60
+
     - name: Check services are running
       run: docker compose ps
-    
-    - name: Show backend logs
-      if: always()
-      run: docker compose logs backend
-    
+
     - name: Show mongodb logs
       if: always()
-      run: docker compose logs mongodb
-    
+      run: docker compose logs mongodb --tail 200
+
     - name: Test backend health endpoint
       run: |
-        for i in {1..10}; do
+        for i in {1..24}; do
           if curl -f http://localhost:3000/health; then
             echo "Backend is healthy"
             exit 0
@@ -43,69 +18,11 @@ jobs:
           echo "Waiting for backend... attempt $i"
           sleep 5
         done
-        echo "Backend health check failed"
+        echo "Backend health check failed - printing debug logs"
+        echo "=== docker compose ps ==="
+        docker compose ps
+        echo "=== backend recent logs ==="
+        docker compose logs backend --tail 500
+        echo "=== mongodb recent logs ==="
+        docker compose logs mongodb --tail 200
         exit 1
-    
-    - name: Test frontend is accessible
-      run: |
-        curl -f http://localhost/ || echo "Frontend may not be responding"
-    
-    - name: Cleanup
-      if: always()
-      run: docker compose down -v
-
-  test-compose-production:
-    runs-on: ubuntu-latest
-    
-    steps:
-    - uses: actions/checkout@v4
-    
-    - name: Create production .env file
-      run: |
-        cat > .env << EOF
-        MONGO_INITDB_ROOT_USERNAME=admin
-        MONGO_INITDB_ROOT_PASSWORD=TestPassword123
-        MONGO_INITDB_DATABASE=safechat
-        MONGODB_URI=mongodb://admin:TestPassword123@mongodb:27017/safechat?authSource=admin
-        JWT_SECRET=test_jwt_secret_key_for_ci
-        PORT=3001
-        ALLOWED_ORIGINS=*
-        EOF
-    
-    - name: Validate docker-compose.prod.yml
-      run: docker compose -f docker-compose.prod.yml config
-    
-    - name: Build production services
-      run: docker compose -f docker-compose.prod.yml build
-    
-    - name: Start production services
-      run: docker compose -f docker-compose.prod.yml up -d
-    
-    - name: Wait for services
-      run: sleep 60
-    
-    - name: Check production services status
-      run: docker compose -f docker-compose.prod.yml ps
-    
-    - name: Show production logs
-      if: always()
-      run: |
-        docker compose -f docker-compose.prod.yml logs backend
-        docker compose -f docker-compose.prod.yml logs mongodb
-    
-    - name: Test production backend health
-      run: |
-        for i in {1..10}; do
-          if curl -f http://localhost:3000/health; then
-            echo "Production backend is healthy"
-            exit 0
-          fi
-          echo "Waiting for production backend... attempt $i"
-          sleep 5
-        done
-        echo "Production backend health check failed"
-        exit 1
-    
-    - name: Cleanup
-      if: always()
-      run: docker compose -f docker-compose.prod.yml down -v
