@@ -23,10 +23,10 @@ services:
     depends_on:
       - mongodb
     environment:
-      - MONGODB_URI=mongodb://admin:MyNew@2025Safe@mongodb:27017/safechat?authSource=admin
-      - JWT_SECRET=super_secret_safechat_key_2025
-      - PORT=3001
-      - ALLOWED_ORIGINS=*
+      MONGODB_URI: "mongodb://admin:MyNew%402025Safe@mongodb:27017/safechat?authSource=admin"
+      JWT_SECRET: "super_secret_safechat_key_2025"
+      PORT: "3001"
+      ALLOWED_ORIGINS: "*"
     networks:
       - im-network
 
