@@ -1,6 +1,8 @@
 import { useState } from 'react';
 import axios from 'axios';
 
+const DEMO_USER = { id: 'demo', username: 'Demo User' };
+
 export default function Login({ onLogin, onRegisterClick }) {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
@@ -208,7 +210,7 @@ export default function Login({ onLogin, onRegisterClick }) {
           textAlign: 'center'
         }}>
           <button
-            onClick={() => onLogin({ id: 'demo', username: 'Demo User' })}
+            onClick={() => onLogin(DEMO_USER)}
             style={{
               padding: '8px 16px',
               fontSize: '13px',

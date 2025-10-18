@@ -2,6 +2,10 @@ import { useEffect, useState, useRef } from 'react';
 import axios from 'axios';
 import { getSocket } from '../socket';
 
+const DEMO_USER_ID = 'demo';
+const DEMO_RESPONSE_MESSAGE = '这是一个演示回复 😊';
+const DEMO_RESPONSE_DELAY = 2000;
+
 export default function Chat({ user }) {
   const [contacts, setContacts] = useState([]);
   const [current, setCurrent] = useState(null);
@@ -9,6 +13,7 @@ export default function Chat({ user }) {
   const [msgs, setMsgs] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const messagesEndRef = useRef(null);
+  const demoResponseTimeoutRef = useRef(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -19,8 +24,17 @@ export default function Chat({ user }) {
   }, [msgs]);
 
   useEffect(() => {
+    // Cleanup demo response timeout on unmount
+    return () => {
+      if (demoResponseTimeoutRef.current) {
+        clearTimeout(demoResponseTimeoutRef.current);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
     // Demo mode - show sample contacts
-    if (user.id === 'demo') {
+    if (user.id === DEMO_USER_ID) {
       setContacts([
         { id: '1', username: '张三' },
         { id: '2', username: '李四' },
@@ -45,25 +59,31 @@ export default function Chat({ user }) {
       if (msg.from === current?.id || msg.from === user.id)
         setMsgs(prev => [...prev, msg]);
     });
-  }, [current]);
+  }, [current, user.id]);
 
   const send = (e) => {
     e.preventDefault();
     if (!text.trim() || !current) return;
     
     // Demo mode - just add message locally
-    if (user.id === 'demo') {
+    if (user.id === DEMO_USER_ID) {
       setMsgs(prev => [...prev, { from: user.id, content: text, timestamp: new Date() }]);
       setText('');
       
-      // Simulate a response after 2 seconds
-      setTimeout(() => {
+      // Clear any existing timeout
+      if (demoResponseTimeoutRef.current) {
+        clearTimeout(demoResponseTimeoutRef.current);
+      }
+      
+      // Simulate a response after delay
+      demoResponseTimeoutRef.current = setTimeout(() => {
         setMsgs(prev => [...prev, { 
           from: current.id, 
-          content: '这是一个演示回复 😊', 
+          content: DEMO_RESPONSE_MESSAGE, 
           timestamp: new Date() 
         }]);
-      }, 2000);
+        demoResponseTimeoutRef.current = null;
+      }, DEMO_RESPONSE_DELAY);
       return;
     }
     
