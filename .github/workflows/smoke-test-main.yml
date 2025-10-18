@@ -194,20 +194,20 @@ jobs:
         id: check-build-script
         working-directory: backend
         run: |
-          if npm run build --if-present 2>&1 | grep -q "Missing script"; then
-            echo "has_build=false" >> $GITHUB_OUTPUT
-            echo "ℹ️ No build script found"
-          else
+          if grep -q '"build"' package.json; then
             echo "has_build=true" >> $GITHUB_OUTPUT
             echo "✅ Build script found"
+          else
+            echo "has_build=false" >> $GITHUB_OUTPUT
+            echo "ℹ️ No build script found"
           fi
 
       - name: Run build if present
-        if: steps.check-backend.outputs.exists == 'true'
+        if: steps.check-backend.outputs.exists == 'true' && steps.check-build-script.outputs.has_build == 'true'
         working-directory: backend
         run: |
-          echo "Attempting to run build script..."
-          npm run build --if-present 2>&1 | tee npm-build.log || true
+          echo "Running build script..."
+          npm run build 2>&1 | tee npm-build.log
 
       - name: Check for test script
         if: steps.check-backend.outputs.exists == 'true'
@@ -240,7 +240,7 @@ jobs:
         run: |
           echo "Testing production start..."
           echo "Starting backend in background..."
-          timeout 30s npm start > npm-start.log 2>&1 &
+          npm start > npm-start.log 2>&1 &
           BACKEND_PID=$!
           echo "Backend started with PID: $BACKEND_PID"
           
@@ -252,7 +252,15 @@ jobs:
             echo "Backend logs:"
             cat npm-start.log || echo "No logs available"
             kill $BACKEND_PID 2>/dev/null || true
-            wait $BACKEND_PID 2>/dev/null || true
+            # Wait for process to terminate
+            for i in {1..5}; do
+              if ! ps -p $BACKEND_PID > /dev/null 2>&1; then
+                break
+              fi
+              sleep 1
+            done
+            # Force kill if still running
+            kill -9 $BACKEND_PID 2>/dev/null || true
             echo "✅ Backend started and stopped successfully"
           else
             echo "❌ Backend process failed to start or crashed"
