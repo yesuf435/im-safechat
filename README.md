@@ -19,7 +19,27 @@ backend/             Node.js + Express + Socket.IO + MongoDB 后端
 frontend/modern/     纯前端现代化 UI，可直接在浏览器打开 index.html
 ```
 
-## 环境准备
+## 快速开始
+
+### 方式 1: Docker 部署（推荐）
+
+**最简单的部署方式**，适合生产环境：
+
+```bash
+# 克隆项目
+git clone https://github.com/yesuf435/im-safechat.git
+cd im-safechat
+
+# 启动所有服务（MongoDB + Backend + Frontend）
+docker compose up -d
+
+# 查看日志
+docker compose logs -f
+```
+
+访问 `http://localhost` 即可使用。详细说明请查看 [DOCKER_DEPLOY.md](DOCKER_DEPLOY.md)。
+
+### 方式 2: 传统部署
 
 1. **安装依赖**
 
