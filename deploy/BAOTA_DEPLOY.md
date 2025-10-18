@@ -56,32 +56,7 @@ safechat/
 
 1. 在宝塔 **网站** → **添加站点**，创建一个纯静态站点（或使用现有站点）。
 2. 将站点根目录指向 `/www/wwwroot/safechat/frontend/modern`，或将其中内容复制到您的静态站点根目录。
-3. **配置前端连接后端**：
-   - 打开前端目录，找到 `config.js` 文件
-   - 根据部署场景选择配置方式：
-
-   **场景 A：前后端同域部署（推荐）**
-   - 如果前端和后端在同一域名下（例如通过 Nginx 反向代理），保持默认配置：
-   ```javascript
-   apiBaseUrl: '',
-   socketUrl: undefined,
-   ```
-
-   **场景 B：后端独立域名**
-   - 如果后端有独立域名（例如 `https://api.yourdomain.com`），修改配置：
-   ```javascript
-   apiBaseUrl: 'https://api.yourdomain.com',
-   socketUrl: 'https://api.yourdomain.com',
-   ```
-
-   **场景 C：使用不同端口（仅测试）**
-   - 如果后端使用不同端口（例如 3001），修改配置：
-   ```javascript
-   apiBaseUrl: 'http://yourdomain.com:3001',
-   socketUrl: 'http://yourdomain.com:3001',
-   ```
-
-4. 如果使用场景 B 或 C，需要在后端设置 `ALLOWED_ORIGINS` 环境变量允许跨域访问。
+3. 如果后端端口非 3001，请在 `frontend/modern/app.js` 中更新默认 API 地址，或通过 `ALLOWED_ORIGINS` 允许来自当前站点的跨域请求。
 
 ## 6. 验证部署
 
