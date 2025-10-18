@@ -201,6 +201,36 @@ export default function Login({ onLogin, onRegisterClick }) {
             立即注册
           </a>
         </div>
+
+        {/* Demo Mode */}
+        <div style={{
+          marginTop: '16px',
+          textAlign: 'center'
+        }}>
+          <button
+            onClick={() => onLogin({ id: 'demo', username: 'Demo User' })}
+            style={{
+              padding: '8px 16px',
+              fontSize: '13px',
+              color: 'var(--text-secondary)',
+              background: 'transparent',
+              border: '1px solid var(--border-medium)',
+              borderRadius: 'var(--radius-sm)',
+              cursor: 'pointer',
+              transition: 'var(--transition)'
+            }}
+            onMouseEnter={(e) => {
+              e.target.style.background = 'var(--bg-primary)';
+              e.target.style.borderColor = 'var(--accent)';
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.background = 'transparent';
+              e.target.style.borderColor = 'var(--border-medium)';
+            }}
+          >
+            🎨 查看界面演示
+          </button>
+        </div>
       </div>
     </div>
   );

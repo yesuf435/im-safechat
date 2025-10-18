@@ -19,11 +19,25 @@ export default function Chat({ user }) {
   }, [msgs]);
 
   useEffect(() => {
+    // Demo mode - show sample contacts
+    if (user.id === 'demo') {
+      setContacts([
+        { id: '1', username: '张三' },
+        { id: '2', username: '李四' },
+        { id: '3', username: 'Alice' },
+        { id: '4', username: 'Bob' },
+        { id: '5', username: '王小明' },
+      ]);
+      return;
+    }
+
     const token = localStorage.getItem('token');
     axios.get(import.meta.env.VITE_API_BASE + '/auth/all', {
       headers: { Authorization: `Bearer ${token}` }
     }).then(res => {
       setContacts(res.data.filter(u => u.id !== user.id));
+    }).catch(err => {
+      console.error('Failed to fetch contacts:', err);
     });
 
     const socket = getSocket();
@@ -36,6 +50,23 @@ export default function Chat({ user }) {
   const send = (e) => {
     e.preventDefault();
     if (!text.trim() || !current) return;
+    
+    // Demo mode - just add message locally
+    if (user.id === 'demo') {
+      setMsgs(prev => [...prev, { from: user.id, content: text, timestamp: new Date() }]);
+      setText('');
+      
+      // Simulate a response after 2 seconds
+      setTimeout(() => {
+        setMsgs(prev => [...prev, { 
+          from: current.id, 
+          content: '这是一个演示回复 😊', 
+          timestamp: new Date() 
+        }]);
+      }, 2000);
+      return;
+    }
+    
     getSocket().emit('private_message', { toUserId: current.id, content: text });
     setMsgs(prev => [...prev, { from: user.id, content: text, timestamp: new Date() }]);
     setText('');
