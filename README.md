@@ -19,7 +19,27 @@ backend/             Node.js + Express + Socket.IO + MongoDB 后端
 frontend/modern/     纯前端现代化 UI，可直接在浏览器打开 index.html
 ```
 
-## 环境准备
+## 快速开始
+
+### 方式 1: Docker 部署（推荐）
+
+**最简单的部署方式**，适合生产环境：
+
+```bash
+# 克隆项目
+git clone https://github.com/yesuf435/im-safechat.git
+cd im-safechat
+
+# 启动所有服务（MongoDB + Backend + Frontend）
+docker compose up -d
+
+# 查看日志
+docker compose logs -f
+```
+
+访问 `http://localhost` 即可使用。详细说明请查看 [DOCKER_DEPLOY.md](DOCKER_DEPLOY.md)。
+
+### 方式 2: 传统部署
 
 1. **安装依赖**
 
@@ -47,6 +67,17 @@ frontend/modern/     纯前端现代化 UI，可直接在浏览器打开 index.h
 4. **打开前端页面**
 
    使用任意静态文件服务器或直接在浏览器中打开 `frontend/modern/index.html`。登录页内置“体验界面预览”按钮，可在未登录状态下快速浏览私信、群聊等界面布局。
+
+   **前后端连接配置**：
+   
+   - 开发环境下，如果前端和后端运行在不同端口，需要配置 API 地址：
+     ```bash
+     cd frontend/modern
+     cp config.example.development.js config.js
+     # 编辑 config.js，设置 apiBaseUrl 和 socketUrl 为后端地址（如 http://localhost:3001）
+     ```
+   
+   - 生产环境部署时，参考 `config.example.production.js` 进行配置。如果前后端同域部署，无需修改默认配置。
 
 5. **访问后台控制台（可选）**
 

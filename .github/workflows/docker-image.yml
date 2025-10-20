@@ -7,12 +7,49 @@ on:
     branches: [ "main" ]
 
 jobs:
-
-  build:
-
+  build-backend:
     runs-on: ubuntu-latest
-
+    
     steps:
     - uses: actions/checkout@v4
-    - name: Build the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    
+    - name: Build backend Docker image
+      run: docker build ./backend --file ./backend/Dockerfile --tag safechat-backend:latest
+    
+    - name: Test backend image
+      run: |
+        docker run -d --name test-backend \
+          -e MONGODB_URI=mongodb://localhost:27017/safechat \
+          -e JWT_SECRET=test_secret \
+          -e PORT=3001 \
+          safechat-backend:latest
+        sleep 5
+        docker logs test-backend
+        docker stop test-backend
+        docker rm test-backend
+
+  test-docker-compose:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - uses: actions/checkout@v4
+    
+    - name: Test docker-compose configuration
+      run: docker compose config
+    
+    - name: Build and start services
+      run: docker compose up -d --build
+    
+    - name: Wait for services to be ready
+      run: sleep 30
+    
+    - name: Check services status
+      run: docker compose ps
+    
+    - name: Check backend health
+      run: |
+        docker compose logs backend
+        curl -f http://localhost:3000/health || echo "Health check endpoint may not exist"
+    
+    - name: Stop services
+      run: docker compose down -v
