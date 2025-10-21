@@ -37,7 +37,10 @@ docker compose up -d
 docker compose logs -f
 ```
 
-访问 `http://localhost` 即可使用。详细说明请查看 [DOCKER_DEPLOY.md](DOCKER_DEPLOY.md)。
+访问 `http://localhost` 即可使用。
+
+**生产环境部署**：请查看 [生产环境部署指南 (PRODUCTION_DEPLOYMENT.md)](PRODUCTION_DEPLOYMENT.md)  
+**Docker 详细说明**：请查看 [DOCKER_DEPLOY.md](DOCKER_DEPLOY.md)
 
 ### 方式 2: 传统部署
 

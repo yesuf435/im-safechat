@@ -13,8 +13,8 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     
-    -       - name: Build Docker image
-        run: docker build -f ./docker/Dockerfile .
+    - name: Build Backend Docker image
+      run: docker build -t safechat-backend:latest -f ./backend/Dockerfile ./backend
     
     - name: Test backend image
       run: |
