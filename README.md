@@ -68,6 +68,17 @@ docker compose logs -f
 
    使用任意静态文件服务器或直接在浏览器中打开 `frontend/modern/index.html`。登录页内置“体验界面预览”按钮，可在未登录状态下快速浏览私信、群聊等界面布局。
 
+   **前后端连接配置**：
+   
+   - 开发环境下，如果前端和后端运行在不同端口，需要配置 API 地址：
+     ```bash
+     cd frontend/modern
+     cp config.example.development.js config.js
+     # 编辑 config.js，设置 apiBaseUrl 和 socketUrl 为后端地址（如 http://localhost:3001）
+     ```
+   
+   - 生产环境部署时，参考 `config.example.production.js` 进行配置。如果前后端同域部署，无需修改默认配置。
+
 5. **访问后台控制台（可选）**
 
    登录成功后，可直接访问 `frontend/modern/admin.html` 获取实时的用户、会话与消息概览。控制台会复用当前浏览器中的登录令牌。
