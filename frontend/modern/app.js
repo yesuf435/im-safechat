@@ -192,11 +192,7 @@ async function apiFetch(path, { method = 'GET', body } = {}) {
     headers.Authorization = `Bearer ${state.token}`;
   }
 
-  // 使用配置的 API 基础 URL
-  const apiBaseUrl = (typeof SafeChatConfig !== 'undefined' && SafeChatConfig.apiBaseUrl) || '';
-  const fullUrl = apiBaseUrl + path;
-
-  const response = await fetch(fullUrl, {
+  const response = await fetch(path, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined
@@ -1026,14 +1022,9 @@ function connectSocket() {
   if (socket) {
     socket.disconnect();
   }
-  
-  // 使用配置的 Socket.IO URL 和选项
-  const socketUrl = (typeof SafeChatConfig !== 'undefined' && SafeChatConfig.socketUrl) || undefined;
-  const socketOptions = (typeof SafeChatConfig !== 'undefined' && SafeChatConfig.socketOptions) || {
+  socket = io({
     transports: ['websocket', 'polling']
-  };
-  
-  socket = socketUrl ? io(socketUrl, socketOptions) : io(socketOptions);
+  });
   socket.on('connect', () => {
     socket.emit('authenticate', state.token);
   });

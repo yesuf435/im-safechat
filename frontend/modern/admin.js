@@ -67,11 +67,7 @@ async function apiFetch(path, { method = 'GET', body } = {}) {
   const headers = { 'Content-Type': 'application/json' };
   headers.Authorization = `Bearer ${state.token}`;
 
-  // 使用配置的 API 基础 URL
-  const apiBaseUrl = (typeof SafeChatConfig !== 'undefined' && SafeChatConfig.apiBaseUrl) || '';
-  const fullUrl = apiBaseUrl + path;
-
-  const response = await fetch(fullUrl, {
+  const response = await fetch(path, {
     method,
     headers,
     body: body ? JSON.stringify(body) : undefined
