@@ -8,14 +8,32 @@
 - 至少 2GB 可用内存
 - 开放端口：80 (HTTP)、443 (HTTPS，可选)
 
-### 一键部署 (One-Command Deployment)
+### 方式 1: 使用自动部署脚本（最简单）
 
 ```bash
 # 1. 克隆项目
 git clone https://github.com/yesuf435/im-safechat.git
 cd im-safechat
 
-# 2. 生产环境配置（推荐）
+# 2. 运行自动部署脚本
+bash deploy-production.sh
+```
+
+脚本会自动：
+- ✅ 检查 Docker 和 Docker Compose
+- ✅ 帮助创建和配置 .env 文件
+- ✅ 验证配置
+- ✅ 构建并启动所有服务
+- ✅ 检查服务健康状态
+
+### 方式 2: 手动部署
+
+```bash
+# 1. 克隆项目
+git clone https://github.com/yesuf435/im-safechat.git
+cd im-safechat
+
+# 2. 生产环境配置
 cp .env.production.example .env
 # 编辑 .env 文件，修改以下关键配置：
 # - MONGO_INITDB_ROOT_PASSWORD（数据库密码）
