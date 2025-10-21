@@ -16,17 +16,30 @@ jobs:
     - name: Build Backend Docker image
       run: docker build -t safechat-backend:latest -f ./backend/Dockerfile ./backend
     
+    - name: Start MongoDB for testing
+      run: |
+        docker run -d --name test-mongodb \
+          -e MONGO_INITDB_ROOT_USERNAME=admin \
+          -e MONGO_INITDB_ROOT_PASSWORD=testpass \
+          -p 27017:27017 \
+          mongo:7
+        sleep 10
+    
     - name: Test backend image
       run: |
         docker run -d --name test-backend \
-          -e MONGODB_URI=mongodb://localhost:27017/safechat \
+          --network host \
+          -e MONGODB_URI=mongodb://admin:testpass@localhost:27017/safechat?authSource=admin \
           -e JWT_SECRET=test_secret \
           -e PORT=3001 \
           safechat-backend:latest
-        sleep 5
+        sleep 10
+        echo "=== Backend logs ==="
         docker logs test-backend
-        docker stop test-backend
-        docker rm test-backend
+        echo "=== Testing health endpoint ==="
+        curl -f http://localhost:3001/health || (docker logs test-backend && exit 1)
+        docker stop test-backend test-mongodb
+        docker rm test-backend test-mongodb
 
   test-docker-compose:
     runs-on: ubuntu-latest
