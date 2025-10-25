@@ -1,1 +1,2 @@
-[![.github/workflows/docker-compose.yml](https://github.com/Gymmmm/im-safechat/actions/workflows/docker-compose.yml/badge.svg)](https://github.com/Gymmmm/im-safechat/actions/workflows/docker-compose.yml)
+FROM ubuntu:latest
+CMD echo Hello Docker!
