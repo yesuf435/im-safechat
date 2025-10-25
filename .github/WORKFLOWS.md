@@ -74,6 +74,81 @@ This document describes the GitHub Actions workflows configured for the SafeChat
 - `contents: read` - Read repository content
 - `packages: write` - Write to GitHub Container Registry
 
+### 4. Smoke Test Main Branch (`smoke-test-main.yml`)
+
+**Purpose**: Comprehensive smoke testing of the main branch to detect build, test, and deployment issues early. This workflow validates that all components (frontend, backend, and Docker setup) can be built and started successfully.
+
+**Triggers**:
+- Push to the `copilot/add-smoke-test-workflow` branch (for testing)
+- Manual workflow dispatch with optional debug mode
+
+**Jobs**:
+
+#### environment-info
+- Sets up Node.js 18 with npm caching
+- Prints Node.js and npm versions for debugging
+- Lists repository root files and directory structure
+- Validates presence of key directories (frontend, backend)
+
+#### frontend-vite-build
+- Detects if `frontend/im-frontend` exists
+- Installs dependencies with `npm ci`
+- Builds the Vite/React frontend with `npm run build`
+- Verifies the `dist` directory is created
+- Fails the job if build errors occur
+- Uploads build logs and artifacts
+
+#### frontend-static-check
+- Detects if `frontend/modern` exists
+- Echoes confirmation message (no build needed for static HTML)
+- Verifies index.html exists in static demo
+
+#### backend-smoke-test
+- Detects if `backend` directory exists
+- Installs dependencies with `npm ci`
+- Attempts to run `npm run build --if-present`
+- Runs `npm test --if-present` if test script exists
+- If neither build nor test scripts exist, starts backend in production mode (`NODE_ENV=production`) briefly to confirm it starts, then stops it
+- Fails the job on any errors
+- Uploads all build/test/start logs and any build artifacts
+
+#### docker-compose-smoke-test
+- Detects if `docker-compose.yml` exists in repository root
+- Validates docker-compose configuration
+- Runs `docker compose up --build -d` to build and start all services
+- Waits 30 seconds for services to initialize
+- Outputs `docker compose ps` to show service status
+- Displays logs from all services (backend, mongodb, frontend)
+- Checks service health status
+- Cleans up with `docker compose down -v`
+- Uploads all docker-compose logs
+
+#### smoke-test-summary
+- Provides a summary of all smoke test results
+- Lists available artifacts for download and inspection
+
+**Artifacts Uploaded**:
+- `frontend-vite-build-logs`: npm install and build logs for Vite frontend
+- `frontend-vite-dist`: Built frontend distribution files
+- `backend-logs`: npm install, build, test, and start logs
+- `backend-build`: Built backend artifacts (if any)
+- `docker-compose-logs`: All docker-compose related logs
+
+**How to Run Manually**:
+
+1. Navigate to the Actions tab in GitHub
+2. Select "Smoke Test Main Branch" workflow
+3. Click "Run workflow" button
+4. Optionally enable debug output
+5. Click "Run workflow" to start
+
+**Use Cases**:
+- Pre-deployment validation of the main branch
+- Continuous monitoring of build health
+- Early detection of integration issues
+- Verification after dependency updates
+- Quick smoke test before tagging releases
+
 ## Usage
 
 ### Local Development
