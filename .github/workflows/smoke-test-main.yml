@@ -29,17 +29,14 @@ jobs:
             backend/package-lock.json
             frontend/im-frontend/package-lock.json
 
-      - name: Print Node.js and npm versions
-        run: |
-          echo "Node.js version:"
-          node --version
-          echo "npm version:"
-          npm --version
-
-      - name: List repository root files
-        run: |
-          echo "Repository root contents:"
-          ls -la
+     services:
+  app:
+    image: your-image
+    environment:
+      - VAR1=value1
+      - VAR2=value2
+    # ... other keys here
+    # Remove any additional 'environment:' key under 'app'
 
       - name: Check directory structure
         run: |
