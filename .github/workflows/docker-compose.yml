@@ -63,8 +63,3 @@ jobs:
               docker buildx build --platform linux/amd64,linux/arm64 -f "$df" -t "${imagename}:latest" "${build_context}" --push
             fi
           done < dockerfiles.txt
-            docker buildx build --platform linux/amd64,linux/arm64 -f "$df" -t "${imagename}:${TAG}" "${build_context}" --push
-            if echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
-              docker buildx build --platform linux/amd64,linux/arm64 -f "$df" -t "${imagename}:latest" "${build_context}" --push
-            fi
-          done < dockerfiles.txt
