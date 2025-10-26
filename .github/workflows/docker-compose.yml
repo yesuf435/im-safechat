@@ -1,65 +1,7 @@
-name: Publish Docker images
-on:
-  push:
-    tags:
-      - 'v*.*.*'
-  release:
-    types: [published]
 
-permissions:
-  contents: read
-  packages: write
-
-jobs:
-  build-and-push:
-    runs-on: ubuntu-latest
-    env:
-      REGISTRY: ghcr.io
-      OWNER: ${{ github.repository_owner }}
-      REPO: ${{ github.event.repository.name }}
-      TAG_NAME: ${{ github.ref_name }}
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up QEMU and buildx
-        uses: docker/setup-buildx-action@v2
-
-      - name: Login to GHCR
-        uses: docker/login-action@v2
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Find Dockerfiles
-        id: find
-        run: |
-          # find all Dockerfile paths, write normalized list to dockerfiles.txt
-          find . -type f -iname Dockerfile -print0 | xargs -0 -n1 printf '%s\n' | sed 's#^\./##' > dockerfiles.txt || true
-          COUNT=$(wc -l < dockerfiles.txt || echo 0)
-          echo "count=$COUNT" >> $GITHUB_OUTPUT
-
-      - name: Build and push images
-        if: steps.find.outputs.count != '0'
-        run: |
-          TAG="${TAG_NAME:-${GITHUB_SHA::7}}"
-          REG="${REGISTRY}"
-          OWNER="${OWNER}"
-          REPO="${REPO}"
-          while IFS= read -r df || [ -n "$df" ]; do
-            dir=$(dirname "$df")
-            if [ "$dir" = "." ]; then
-              imagename="${REG}/${OWNER}/${REPO}"
-              build_context="."
-            else
-              safe_dir=$(echo "$dir" | sed 's#/#-#g' | sed 's#[^a-zA-Z0-9._-]#-#g')
-              imagename="${REG}/${OWNER}/${REPO}-${safe_dir}"
-              build_context="${dir}"
-            fi
-            echo "Building and pushing: Dockerfile=$df -> ${imagename}:${TAG}"
-            docker buildx build --platform linux/amd64,linux/arm64 -f "$df" -t "${imagename}:${TAG}" "${build_context}" --push
-            if echo "$TAG" | grep -Eq '^v[0-9]+\.[0-9]+\.[0-9]+$'; then
-              docker buildx build --platform linux/amd64,linux/arm64 -f "$df" -t "${imagename}:latest" "${build_context}" --push
-            fi
-          done < dockerfiles.txt
+FROM node:18
+WORKDIR /app
+COPY . .
+RUN npm install
+EXPOSE 3000
+CMD ["npm", "start"]
